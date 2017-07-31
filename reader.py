@@ -40,9 +40,6 @@ class HeightMap():
                         'Z': 0
                         }
 
-
-
-
 def get_extension(f_path):
     """Returns the extension of a file, given the file path"""
     ext = os.path.splitext(f_path)[1][1:].lower()
@@ -59,52 +56,46 @@ def check_path(f_path):
         todo("Throw an error and exit")
 
 def read(f_name):
-    """Main function for reading in data from axz or axd files"""
+    """Main function for reading in data from axz or axd files and returns a python object"""
     #get complete file path
     f_path = os.path.abspath(f_name)
     #check that file is kosher
     check_path(f_path)
     #get the file extension
     ext = get_extension(f_path)
-    #get the file data from axz or axd
+    #get the xml data from axz or axd
     if ext == 'axz':
-        f_data = open_axz(f_path)
+        f_xml = open_axz(f_path)
     else:
-        f_data = open_axd(f_path)
+        f_xml = open_axd(f_path)
+    # root = f_xml.getroot()
+    # print(tree)
+    # print(root)
+    # print(ET.tostring(root, encoding="unicode", method="xml"))
+    # print(root.getchildren()[0].tag)
     todo("pickup here")
 
 def open_axd(f_path):
-    """Opens an axd file and returns its content"""
-    todo("strip out unnecessary blank lines (may not be critical, depending on Etree reqs)")
-    with open(f_path) as f:
-        f_data = f.read()
+    """Opens an axd file and returns its content as an ElementTree object"""
+    # todo("strip out unnecessary blank lines (may not be critical, depending on Etree reqs)")
+    # with open(f_path) as f:
+        # f_data = f.read()
+    f_data = ET.parse(f_path)
     return f_data
 
 def open_axz(f_path):
-    """Opens an axz file and returns its content"""
+    """Opens an axz file and returns its content as an ElementTree object"""
     with gzip.open(f_path) as f:
-        f_data = f.read().decode("utf-16")
+        # f_data = f.read().decode("utf-16")
+        f_data = ET.parse(f)
     return f_data
 
-def test_func():
-    todo("fix encoding header in output file (says utf-16, but it's utf-8)")
-    with gzip.open('Test Data/EmptyIRDoc.axz', 'rb') as myfile:
-        data=myfile.read().decode("utf-16")
-        print(data)
-        with open("Test Data/newfile.xml", 'w', newline="") as f:
-            f.write(data)
-
-def load_file():
-    """Opens the 'Open' file dialogue box"""
-    f_names = tk.filedialog.askopenfilename( filetypes=( ("Anasys", "*.axz; *.axd"), ("All files", "*.*") ), multiple=True )
-    if f_names:
-        for f in f_names:
-            todo("load file")
-
-
-# def deleteme():
-#     print(sys.path[0])
-#     print(__name__)
+# def load_file():
+#     """Opens the 'Open' file dialogue box"""
+#     f_names = tk.filedialog.askopenfilename( filetypes=( ("Anasys", "*.axz; *.axd"), ("All files", "*.*") ), multiple=True )
+#     if f_names:
+#         for f in f_names:
+#             todo("load file")
 
 def todo(message="Do something!"):
     """For debug only- creates console notes with line numbers"""
@@ -121,9 +112,7 @@ def todo(message="Do something!"):
         pass
 
 def main():
-    # test_func()
-    # deleteme()
-    # read('Test Data/EmptyIRDoc.axz')
+    read('Test Data/EmptyIRDoc.axz')
     read('Test Data/TappingModeimage.axd')
 
 if __name__ == '__main__':

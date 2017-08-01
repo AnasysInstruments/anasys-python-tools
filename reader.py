@@ -68,26 +68,24 @@ def read(f_name):
         f_xml = open_axz(f_path)
     else:
         f_xml = open_axd(f_path)
-    # root = f_xml.getroot()
-    # print(tree)
-    # print(root)
+    root = f_xml.root
     # print(ET.tostring(root, encoding="unicode", method="xml"))
     # print(root.getchildren()[0].tag)
     todo("pickup here")
 
 def open_axd(f_path):
     """Opens an axd file and returns its content as an ElementTree object"""
-    # todo("strip out unnecessary blank lines (may not be critical, depending on Etree reqs)")
-    # with open(f_path) as f:
-        # f_data = f.read()
-    f_data = ET.parse(f_path)
+    f_data = ET.iterparse(f_path)
+    for _, el in f_data:
+        el.tag = el.tag.split('}', 1)[1] #strip namespaces from tags
     return f_data
 
 def open_axz(f_path):
     """Opens an axz file and returns its content as an ElementTree object"""
     with gzip.open(f_path) as f:
-        # f_data = f.read().decode("utf-16")
-        f_data = ET.parse(f)
+        f_data = ET.iterparse(f)
+        for _, el in f_data:
+            el.tag = el.tag.split('}', 1)[1] #strip namespaces from tags
     return f_data
 
 # def load_file():
@@ -113,7 +111,7 @@ def todo(message="Do something!"):
 
 def main():
     read('Test Data/EmptyIRDoc.axz')
-    read('Test Data/TappingModeimage.axd')
+    read('Test Data/EmptyIRDoc.axd')
 
 if __name__ == '__main__':
     # import argparse

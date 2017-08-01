@@ -69,24 +69,31 @@ def read(f_name):
     else:
         f_xml = open_axd(f_path)
     root = f_xml.root
-    # print(ET.tostring(root, encoding="unicode", method="xml"))
+    # print(f_xml)
+    # print(root)
+    print(ET.tostring(root, encoding="unicode", method="xml"))
     # print(root.getchildren()[0].tag)
+    return ET.tostring(root, encoding="unicode", method="xml")
     todo("pickup here")
+
+def strip_namespace(f_data):
+    """strips annoying xmlns data that elementTree auto-prepends to all element tags"""
+    for _, el in f_data:
+        el.tag = el.tag.split('}', 1)[1] #strip namespaces from tags
+    return f_data
 
 def open_axd(f_path):
     """Opens an axd file and returns its content as an ElementTree object"""
     f_data = ET.iterparse(f_path)
-    for _, el in f_data:
-        el.tag = el.tag.split('}', 1)[1] #strip namespaces from tags
-    return f_data
+    f_data = strip_namespace(f_data)
+    return f_data #returns an ET.iterparse object
 
 def open_axz(f_path):
     """Opens an axz file and returns its content as an ElementTree object"""
     with gzip.open(f_path) as f:
         f_data = ET.iterparse(f)
-        for _, el in f_data:
-            el.tag = el.tag.split('}', 1)[1] #strip namespaces from tags
-    return f_data
+        f_data = strip_namespace(f_data)
+    return f_data #returns an ET.iterparse object
 
 # def load_file():
 #     """Opens the 'Open' file dialogue box"""
@@ -112,6 +119,8 @@ def todo(message="Do something!"):
 def main():
     read('Test Data/EmptyIRDoc.axz')
     read('Test Data/EmptyIRDoc.axd')
+    #Test axz and axd output is the same
+    print(read('Test Data/EmptyIRDoc.axz') == read('Test Data/EmptyIRDoc.axd'))
 
 if __name__ == '__main__':
     # import argparse

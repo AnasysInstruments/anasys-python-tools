@@ -24,9 +24,10 @@ class AnasysFile():
         #set tag attributes as named python attributes
         for key, val in src_root.items():
             setattr(self, key, val)
-        self.height_maps = {}
-        self.rendered_spectra = {}
-        print(self.type)
+        # for item in
+    def __repr__(self):
+        for attr in dir(self):
+            print(attr)
         # for child in root:
 
 class HeightMap():

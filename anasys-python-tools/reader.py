@@ -25,9 +25,64 @@ class AnasysFile():
         for key, val in src_root.items():
             setattr(self, key, val)
         # for item in
-    def __repr__(self):
-        for attr in dir(self):
-            print(attr)
+    # def __repr__(self):
+    #     for attr in dir(self):
+    #         # print(attr)
+
+        # data = self.convert_tags(src_root)
+        # print(data)
+        for neighbor in src_root.iter():
+            print(neighbor.attrib)
+        # for elem in src_root:
+        #     print('tag: {}'.format(elem.tag))
+        #     try:
+        #         print('\ttag:{}'.format(elem[0].tag))
+        #     except:
+        #         continue
+    def convert_tags(self, elements):
+        # print(elements.tag)
+        # print(list(elements))
+        todo("verify dict is really the best data structure for this")
+        new_obj = {}
+        for elem in elements:
+            # print(elem.tag)
+            # print(elem.text)
+            # print(elem.tag)
+            # if elem.text:
+            #     return 'text'
+            # print(list(elem))
+            if len(list(elem)) == []:
+                # print(list(elem))
+                # print('{}'.format(elem.tag))
+                # print("/{}".format(elem.tag))
+                print(elem.text)
+                if elem.text.replace(" ", "") != "":
+                    # print('text')
+                    return elem.text
+                else:
+                    # print("/"+elem.tag)
+                    return {}
+            else:
+                new_obj[elem.tag] = self.convert_tags(elem)
+                # print("/"+elem.tag)
+                # print("\t{}".format(self.convert_tags(elem)))
+                # elem.tag: self.convert_tags(elem)
+        return new_obj
+
+        # for element in elem.iter():
+        #     print(convert_tags(element))
+
+
+        # if elem.hasnochildren:
+        #     if elem.coment():
+        #         content = elem.content()
+        #     else:
+        #         content = {}
+        #     return content
+        # else:
+        #     return {elem.tag: elem.convert_tags}
+
+
 
 class HeightMap():
     """Object for holding height map data"""
@@ -104,7 +159,7 @@ def todo(message="Do something!"):
         pass
 
 def main():
-    r = read('../test/test data/TappingModeimage.axd')
+    r = read('./test/test data/TappingModeimage.axd')
 
 if __name__ == '__main__':
     # import argparse

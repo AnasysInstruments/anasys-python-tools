@@ -113,11 +113,11 @@ def todo(message="Do something!"):
         pass
 
 def main():
-    r = read('Test Data/TappingModeimage.axd')
+    r = read('Test/Test Data/TappingModeimage.axd')
     print(r)
     # print(r.items())
-    # read('Test Data/EmptyIRDoc.axz')
-    # read('Test Data/EmptyIRDoc.axd')
+    # read('Test/Test Data/EmptyIRDoc.axz')
+    # read('Test/Test Data/EmptyIRDoc.axd')
     #Test axz and axd output is the same
     # print(read('Test Data/EmptyIRDoc.axz') == read('Test Data/EmptyIRDoc.axd'))
 

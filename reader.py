@@ -88,15 +88,6 @@ def open_axz(f_path):
         f_data = strip_namespace(f_data)
     return f_data #returns an ET.iterparse object
 
-# print(ET.tostring(root, encoding="unicode", method="xml"))
-
-# def load_file():
-#     """Opens the 'Open' file dialogue box"""
-#     f_names = tk.filedialog.askopenfilename( filetypes=( ("Anasys", "*.axz; *.axd"), ("All files", "*.*") ), multiple=True )
-#     if f_names:
-#         for f in f_names:
-#             todo("load file")
-
 def todo(message="Do something!"):
     """For debug only- creates console notes with line numbers"""
     def get_line_number():
@@ -113,12 +104,6 @@ def todo(message="Do something!"):
 
 def main():
     r = read('Test/Test Data/TappingModeimage.axd')
-    print(r)
-    # print(r.items())
-    # read('Test/Test Data/EmptyIRDoc.axz')
-    # read('Test/Test Data/EmptyIRDoc.axd')
-    #Test axz and axd output is the same
-    # print(read('Test Data/EmptyIRDoc.axz') == read('Test Data/EmptyIRDoc.axd'))
 
 if __name__ == '__main__':
     # import argparse

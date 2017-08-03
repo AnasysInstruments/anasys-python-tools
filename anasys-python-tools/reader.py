@@ -55,6 +55,7 @@ def check_path(f_path):
 
 def read(f_name):
     """Main function for reading in data from axz or axd files and returns a python object"""
+    todo("make this a wrapper func for AnasysFile class creation and move relevant funcs inside class def")
     #get complete file path
     f_path = os.path.abspath(f_name)
     #check that file is kosher
@@ -103,7 +104,7 @@ def todo(message="Do something!"):
         pass
 
 def main():
-    r = read('Test/Test Data/TappingModeimage.axd')
+    r = read('../test/test data/TappingModeimage.axd')
 
 if __name__ == '__main__':
     # import argparse

@@ -28,7 +28,6 @@ class AnasysFile():
     def __repr__(self):
         for attr in dir(self):
             print(attr)
-        # for child in root:
 
 class HeightMap():
     """Object for holding height map data"""

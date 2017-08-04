@@ -30,7 +30,7 @@ class AnasysFile():
         #         print(neighbor.attrib)
         doc_root = self.read(f_name)
         self.data = self.convert_tags(doc_root)
-        print(self.data)
+        # print(self.data)
     def __repr__(self):
         for d in dir():
             print(d)

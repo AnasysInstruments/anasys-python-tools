@@ -10,7 +10,7 @@
 import anasys_file
 
 def main():
-    r = anasys_file.read('./test/test data/TappingModeimage2.axd')
+    r = anasys_file.read('./test/test data/TappingModeImage2.axd')
     print(r)
 
 if __name__ == '__main__':

@@ -26,6 +26,7 @@ class AnasysFile():
         #2. pull out HeightMaps
         self.heightmaps = self._get_height_maps(doc_root.find('HeightMaps'))
         # print(self.heightmaps)
+        # print(self.heightmaps)
         #3. pull out Spectra
         #4. pull out anything else important
         #5. put the rest in data (or jsut store the whole etree)

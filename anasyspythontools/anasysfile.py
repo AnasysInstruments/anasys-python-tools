@@ -25,9 +25,12 @@ class AnasysFile():
         doc_root = self._get_etree(f_name)
         #2. pull out HeightMaps
         self.heightmaps = self._get_height_maps(doc_root.find('HeightMaps'))
+        # print(self.heightmaps)
         #3. pull out Spectra
         #4. pull out anything else important
         #5. put the rest in data (or jsut store the whole etree)
+        # for at in dir(self.heightmaps['Height 1']):
+        #     print(self.heightmaps['Height 1'][at])
         self.data = self._convert_tags(doc_root)
         #set tag attributes as named python attributes
         # for key, val in src_root.items():
@@ -36,14 +39,7 @@ class AnasysFile():
         #     if neighbor.attrib:
         #         print(neighbor.attrib)
 
-        print()
-        print(self.data)
-        print()
-
-        # print(sys.getsizeof(self))
-    #     print(dir(self))
-    # def __repr__(self):
-    #     print(dir())
+        # print(self.data)
 
     def _get_height_maps(self, maps):
         """Takes an iterable of Height Maps, and returns a dict of HeightMap objects"""
@@ -68,7 +64,6 @@ class AnasysFile():
         else:
             key += ' ({})'.format(copy)
             return self._check_key(key, _dict, copy)
-
 
     def _convert_tags(self, element):
         """Iterates through element tree object and converts to python dicts"""

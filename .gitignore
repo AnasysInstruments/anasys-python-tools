@@ -12,3 +12,7 @@ Thumbs.db
 #########
 messages.txt
 __pycache__/
+
+# Scratch #
+###########
+scratch/

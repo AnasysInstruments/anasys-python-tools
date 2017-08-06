@@ -10,8 +10,11 @@
 # import xml.etree.ElementTree as ET   #for parsing XML
 
 class Obj(object):
+    def __init__(self, nom="blank"):
+        self.name = nom
     def __repr__(self):
-        return str(dir())
+        # return str(dir())
+        return "Obj()"
 
 def atts(obj):
     return [x for x in dir(obj) if x[0]!='_']
@@ -21,78 +24,45 @@ class HeightMap():
     def __init__(self, hm):
         self.test = "test"
         self._convert_tags(hm)
-
+        print('\n##################################\n')
+        try:
+            # print(self.Position)
+            # print(self.Position.X)
+            # print(self.Position.Y)
+            # print(self.Position.Z)
+            # print(self.Position.X)
+            # print(self.HeightMap.Position.X.X)
+            # print(self.HeightMap.Position.Y)
+            print(atts(self), "\n")
+            print(type(self.Position.X))
+            print(atts(self.Position.X))
+            # for at in atts(self):
+            #     print(at,"\n", atts(at), "\n")
+            # print(self.Position.x)
+        except:
+            print("FAIL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            pass
         # print(atts(self))
-        # print()
+        # print(atts(self.Position))
+        # print(atts(self.Position.X))
+        # print(self.Position)
+        # print(self.Position.X)
         # print(self.Position)
         # print(self.Position.Z)
         # print(atts(self.Position))
-        print('##################################\n\n')
-        # for i in list(hm):
-        #     print(i.tag)
-        # print()
-        # for i in dir(self):
-        #     if i[0] != '_':
-        #         print(i)
-
-        # print(hm.tag)
-        # self.position = {'x':0, 'y':0}
-        # print(self.position.x)
-
-    def _to_etree(self):
-        """Returns HeightMap data as etree data in original axz/axd format"""
-        raise NotImplementedError
-
-    def getimage(self):
-        """Returns the heightmap in visual image form"""
-        #enhance for different file types - bitmap, png etc
-        raise NotImplementedError
+        print('\n##################################\n')
 
     def _convert_tags(self, element, parent_obj=None):
-        # print("EL: {} CH: {}".format(element, obj))
-        """Iterates through element tree object and converts to python dicts"""
         if list(element) == []:
-            #element has no children - return either text or {}
             if element.text:
-                setattr(parent_obj, element.tag, element.text)
+                return element.text
             else:
-                setattr(parent_obj, element.tag, {})
-            return(parent_obj) #may not need to return this
+                return {}
         else:
-            #element has children - loop through and recurse on each
+            element_obj = Obj()
+            if parent_obj == None:
+                element_obj = self
             for child in element:
-                print(element, child)
-                recurse_return = self._convert_tags(child, Obj())
-                print(recurse_return)
-                if parent_obj == None:
-                    setattr(self, child.tag, recurse_return)
-                    # print(getattr(self, "test"))
-                else:
-                    setattr(parent_obj, child.tag, recurse_return)
-                # self._convert_tags(child, )
-            return recurse_return
-
-                # setattr(obj, child.tag, obj)
-                # print('setattr({}, {}, {})'.format(obj, child.tag, a))
-        # print(dir(obj))
-#onj.child = ct()
-            #
-            #     new_obj[child.tag] = self._convert_tags(child)
-            # return setattr(self, element.tag, )
-
-# <HeightMap>
-#     <Position>
-#         <X>0</X>
-#         <Y>0</Y>
-#         <Z>0</Z>
-#     </Position>
-#     <Resolution/>
-#     <Units>m</Units>
-# # </Heightmap>
-#
-# ct(heightmap):
-# setattr(OBJ?, position, ct(position, blank object
-#     setattr(blank object)
-#
-#     )
-# )
+                rr = self._convert_tags(child, element)
+                setattr(element_obj, child.tag, rr)
+            return element_obj

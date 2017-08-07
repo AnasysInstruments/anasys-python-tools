@@ -12,11 +12,10 @@ import codecs
 import struct
 import tkinter as tk
 from tkinter import filedialog
+import anasysfile
 
-class HMElement(object):
-    def __dir__(self):
-        #Returns a list of user-accessible attributes
-        return [x for x in dir(self) if x[0]!='_']
+class HMElement(anasysfile.AnasysElement):
+    pass
 
 class HeightMap():
     """A data structure for holding HeightMap data"""
@@ -69,9 +68,7 @@ class HeightMap():
         self.SampleBase64 = np.array(data).reshape(int(self.Resolution.X), int(self.Resolution.Y))
 
     def _plot(self, plt_opts = {}):
-        # if type(self.SampleBase64) != 'numpy.ndarray':
-        #     print("No Height Image Data")
-        #     return
+        """Generates a pyplot image of height map for saving or viewing"""
         axes = [0, int(self.Size.X), 0, int(self.Size.Y)]
         _max = np.absolute(self.SampleBase64).max()
         #Set color bar range to [-y, +y] where y is abs(max(minval, maxval)) rounded up to the nearest 5
@@ -89,10 +86,16 @@ class HeightMap():
         if self.UnitPrefix != {}:
             units = self.UnitPrefix + self.Units
         plt.colorbar().set_label(units)
+        #Set window title
+        plt.gcf().canvas.set_window_title()#self.label)
         return plt
 
     def show(self):
         """Opens an mpl gui window with image data"""
+        if type(self.SampleBase64) == dict:
+        #Don't do anything if list is empty
+            print("Error: No image data in HeightMap object")
+            return
         #Do all the plotting
         plt = self._plot()
         #Display image
@@ -100,12 +103,12 @@ class HeightMap():
 
     def savefig(self, fname=None, **kwargs):
         """
-        Gets the plot from self._plot(), then saves. Optional options are documented:
+        Gets the plot from self._plot(), then saves. Options are documented:
         https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.savefig
         """
         if type(self.SampleBase64) == dict:
         #Don't do anything if list is empty
-            print("Error: No iamge data in HeightMap object")
+            print("Error: No image data in HeightMap object")
             return
         #Do all the plotting
         plt = self._plot()
@@ -120,7 +123,7 @@ class HeightMap():
         #Test for presense of filename and get one if needed
         if fname is None:
             fname = tk.filedialog.asksaveasfilename(filetypes=ftypes, defaultextension=".png", initialfile="HeightMap.png")
-        if fname == None:
+        if fname == None or fname == "":
             print("ERROR: User failed to provide filename. Abort save command.")
             return
         # if options is not None:

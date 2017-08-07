@@ -7,62 +7,42 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 
-# import xml.etree.ElementTree as ET   #for parsing XML
-
-class Obj(object):
+class HMElement(object):
     def __init__(self, nom="blank"):
         self.name = nom
-    def __repr__(self):
-        # return str(dir())
-        return "Obj()"
-
-def atts(obj):
-    return [x for x in dir(obj) if x[0]!='_']
+    def __dir__(self):
+        return [x for x in dir(self) if x[0]!='_']
 
 class HeightMap():
     """A data structure for holding HeightMap data"""
     def __init__(self, hm):
-        self.test = "test"
         self._convert_tags(hm)
-        print('\n##################################\n')
-        try:
-            # print(self.Position)
-            # print(self.Position.X)
-            # print(self.Position.Y)
-            # print(self.Position.Z)
-            # print(self.Position.X)
-            # print(self.HeightMap.Position.X.X)
-            # print(self.HeightMap.Position.Y)
-            print(atts(self), "\n")
-            print(type(self.Position.X))
-            print(atts(self.Position.X))
-            # for at in atts(self):
-            #     print(at,"\n", atts(at), "\n")
-            # print(self.Position.x)
-        except:
-            print("FAIL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            pass
-        # print(atts(self))
-        # print(atts(self.Position))
-        # print(atts(self.Position.X))
-        # print(self.Position)
-        # print(self.Position.X)
-        # print(self.Position)
-        # print(self.Position.Z)
-        # print(atts(self.Position))
-        print('\n##################################\n')
+
+    def __dir__(self):
+        return [x for x in dir(self) if x[0]!='_']
 
     def _convert_tags(self, element, parent_obj=None):
+        """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
+        #If element has no children, return either it's text or {}
         if list(element) == []:
             if element.text:
+                #Default return value for an element with text
                 return element.text
             else:
+                #Default return value for an empty tree leaf/XML tag
                 return {}
+        #If element has children, return an object with its children
         else:
-            element_obj = Obj()
+            #Default case, create blank object to add attributes to
+            element_obj = HMElement()
+            #Top level case, we want to add to self, rather than blank object
             if parent_obj == None:
                 element_obj = self
+            #Loop over each child and add attributes
             for child in element:
+                #Get recursion return value - either text, {} or HMElement() instance
                 rr = self._convert_tags(child, element)
+                #Set element_obj.child_tag = rr
                 setattr(element_obj, child.tag, rr)
+            #Return the object containing all children and attributes
             return element_obj

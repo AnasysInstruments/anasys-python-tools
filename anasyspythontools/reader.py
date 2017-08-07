@@ -10,7 +10,11 @@
 import anasysfile
 
 def main():
-    r = anasysfile.read('./test/test data/TappingModeImage2.axd')
+    f = anasysfile.read('./test/test data/TappingModeimage.axd')
+    hms = []
+    for key, hm in f.HeightMaps.items():
+        hm.show()
+        hm.save()
     # r = anasys_file.read('./test/test data/TappingModeimage3.axz')
     # r = anasys_file.read('./test/test data/TappingModeimage.axx')
     # r = anasys_file.read('./test/test data/TappingModeimage.axd')

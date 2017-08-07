@@ -8,11 +8,14 @@
 #  redistributed or modified without explict permission of the author.
 import numpy as np
 import matplotlib.pyplot as plt
+import codecs
+import struct
+import tkinter as tk
+from tkinter import filedialog
 
 class HMElement(object):
-    def __init__(self, nom="blank"):
-        self.name = nom
     def __dir__(self):
+        #Returns a list of user-accessible attributes
         return [x for x in dir(self) if x[0]!='_']
 
 class HeightMap():
@@ -22,6 +25,7 @@ class HeightMap():
         self._handle_img_data()
 
     def __dir__(self):
+        #Returns a list of user-accessible attributes
         return [x for x in dir(self) if x[0]!='_']
 
     def _convert_tags(self, element, parent_obj=None):
@@ -53,27 +57,66 @@ class HeightMap():
     def _handle_img_data(self):
         """Converts bytestring into numpy array of correct size and shape"""
         if self.SampleBase64 == {}:
+            print("No Height Image Data")
             return
         #Format structure is Xres * Yres floating points (returns a tuple)
-        data_format = "f" * self.Resolution.X * self.Resolution.Y
+        data_format = "f" * int(self.Resolution.X) * int(self.Resolution.Y)
         #Re-encode to bytes from string, then decode bytes using base64
         decoded = codecs.decode(self.SampleBase64.encode(), 'base64')
         #Unpack the data
         data = struct.unpack(data_format, decoded)
         #Reshape the data as a numpy array and save over the string
-        self.SampleBase64 = np.array(data).reshape(self.Resolution.X, self.Resolution.Y)
+        self.SampleBase64 = np.array(data).reshape(int(self.Resolution.X), int(self.Resolution.Y))
 
-    def show(self):
-        if self.SampleBase64 == {}:
-            return
-        axes = [0, self.Size.X, 0, self.Size.Y]
+    def _plot(self, plt_opts = {}):
+        # if type(self.SampleBase64) != 'numpy.ndarray':
+        #     print("No Height Image Data")
+        #     return
+        axes = [0, int(self.Size.X), 0, int(self.Size.Y)]
         _max = np.absolute(self.SampleBase64).max()
+        #Set color bar range to [-y, +y] where y is abs(max(minval, maxval)) rounded up to the nearest 5
         rmax = _max
         if (_max //5) % 5 != 0:
             rmax = (_max // 5)*5 + 5
+        #Display height image
         plt.imshow(self.SampleBase64, cmap='gray', interpolation='none', extent=axes, vmin=-rmax, vmax=rmax)
+        #Set titles
         plt.xlabel('μm')
         plt.ylabel('μm')
         # plt.title(self.Label)
-        plt.colorbar().set_label(self.UnitPrefix + self.Units)
+        #Adds color bar with units displayed
+        units = self.Units
+        if self.UnitPrefix != {}:
+            units = self.UnitPrefix + self.Units
+        plt.colorbar().set_label(units)
+        return plt
+
+    def show(self):
+        """Opens an mpl gui window with image data"""
+        #Do all the plotting
+        plt = self._plot()
+        #Display image
         plt.show()
+
+    def save(self, fname=None, options=None):
+        """
+        Gets the plot from self._plot(), then saves. Optional options are documented:
+        https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.savefig
+        """
+        # if type(self.SampleBase64) != 'numpy.ndarray':
+        # #Don't do anything if list is empty
+        #     return
+        #Do all the plotting
+        plt = self._plot()
+        #Test for presense of filename and get one if needed
+        if fname is None:
+            print("here")
+            # fname = tk.filedialog.asksaveasfilename(filetypes=(("png", "*.png"),
+            # ("All files", "*.*") ), defaultextension=".png", initialfile="HeightMap.png")
+        if fname == None:
+            print("ERROR: User failed to provide filename. Abort save command.")
+            return
+        if options is not None:
+            plt.save(fname, options)
+            return
+        plt.save(fname)

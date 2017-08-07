@@ -1,0 +1,2 @@
+Add ability to manipulate HM.show() with mpl option flags in **kwargs
+Finish save() function()

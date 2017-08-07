@@ -14,7 +14,7 @@ def main():
     hms = []
     for key, hm in f.HeightMaps.items():
         hm.show()
-        hm.save()
+        hm.savefig()
     # r = anasys_file.read('./test/test data/TappingModeimage3.axz')
     # r = anasys_file.read('./test/test data/TappingModeimage.axx')
     # r = anasys_file.read('./test/test data/TappingModeimage.axd')

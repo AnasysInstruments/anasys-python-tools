@@ -98,25 +98,32 @@ class HeightMap():
         #Display image
         plt.show()
 
-    def save(self, fname=None, options=None):
+    def savefig(self, fname=None, **kwargs):
         """
         Gets the plot from self._plot(), then saves. Optional options are documented:
         https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.savefig
         """
-        # if type(self.SampleBase64) != 'numpy.ndarray':
-        # #Don't do anything if list is empty
-        #     return
+        if type(self.SampleBase64) == dict:
+        #Don't do anything if list is empty
+            print("Error: No iamge data in HeightMap object")
+            return
         #Do all the plotting
         plt = self._plot()
+        #File types for save
+        ftypes = (("Portable Network Graphics (*.png)", "*.png"),
+                ("Portable Document Format(*.pdf)", "*.pdf"),
+                ("Encapsulated Postscript (*.eps)", "*.eps"),
+                ("Postscript (*.ps)", "*.pdf"),
+                ("Raw RGBA Bitmap (*.raw;*.rgba)", "*.raw;*.rgba"),
+                ("Scalable Vector Graphics (*.svg;*.svgz)", "*.svg;*.svgz"),
+                ("All files", "*.*"))
         #Test for presense of filename and get one if needed
         if fname is None:
-            print("here")
-            # fname = tk.filedialog.asksaveasfilename(filetypes=(("png", "*.png"),
-            # ("All files", "*.*") ), defaultextension=".png", initialfile="HeightMap.png")
+            fname = tk.filedialog.asksaveasfilename(filetypes=ftypes, defaultextension=".png", initialfile="HeightMap.png")
         if fname == None:
             print("ERROR: User failed to provide filename. Abort save command.")
             return
-        if options is not None:
-            plt.save(fname, options)
-            return
-        plt.save(fname)
+        # if options is not None:
+        #     plt.save(fname, options)
+        #     return
+        plt.savefig(fname, **kwargs)

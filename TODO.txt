@@ -1,2 +1,22 @@
+#Required
 Add ability to manipulate HM.show() with mpl option flags in **kwargs
 Finish save() function()
+redo AnasysFile()._convert_tags() to convert to objects not dicts
+add xml, axz, axd, csv to save options (eventually hdf5?)
+optionally, split save functions into save and export image or something like that
+Get spectra class done
+parse the rest of the AF()
+split xml atributes into children before/while recursing through
+
+#Packaging, docs, and sugar
+GET PACKAGING SETUP : https://python-packaging.readthedocs.io/en/latest/
+get readthedocs hooked up: https://readthedocs.org/
+create github landing page
+create better file headings
+transfer repo ownership to Anasys Instruments
+define __help__ or __doc__ for all user-accessible classes and methods
+
+#Writing
+Read hm or spectra in from image, csv, numpyarray, etc
+insert hm or spectra into af()
+write AF() to file

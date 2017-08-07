@@ -147,8 +147,7 @@ class AnasysFile():
 def read(f):
     clear_msgs()
     x = AnasysFile(f)
-    # print(dir(x))
-    # print(x)
+    return x
 
 def clear_msgs():
     with open('messages.txt', "w") as f:

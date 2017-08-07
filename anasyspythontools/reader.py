@@ -7,10 +7,10 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 
-import anasysfile
+import anasysdoc
 
 def main():
-    f = anasysfile.read('./test/test data/TappingModeimage.axd')
+    f = anasysdoc.read('./test/test data/TappingModeimage.axd')
     hms = []
     for key, hm in f.HeightMaps.items():
         hm.show()

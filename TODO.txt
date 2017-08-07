@@ -15,8 +15,14 @@ create github landing page
 create better file headings
 transfer repo ownership to Anasys Instruments
 define __help__ or __doc__ for all user-accessible classes and methods
+figure out what to do with __init__.py 
 
 #Writing
 Read hm or spectra in from image, csv, numpyarray, etc
 insert hm or spectra into af()
 write AF() to file
+Default templates for HMs Spectra and AF doc types
+
+#Testing
+Write unit tests!!! Would be easier if relative imports were working , so
+FIGURE OUT HOW TO FIX RELATIVE IMPORTS

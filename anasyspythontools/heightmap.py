@@ -11,8 +11,8 @@ import numpy as np
 import matplotlib
 matplotlib.use("TkAgg") #Keeps tk from crashing on fial dialog open
 import matplotlib.pyplot as plt
-import codecs
-import struct
+# import codecs
+# import struct
 # import math
 import tkinter as tk
 from tkinter import filedialog
@@ -27,7 +27,6 @@ class HeightMap(anasysfile.AnasysFile):
         self._convert_tags(hm)
         self._handle_img_data()
         self._skip_tags = {'Tags':{}}
-        print(self.ZMax)
 
     def _handle_img_data(self):
         """Converts bytestring into numpy array of correct size and shape"""
@@ -37,9 +36,10 @@ class HeightMap(anasysfile.AnasysFile):
         #Format structure is Xres * Yres floating points (returns a tuple)
         data_format = "f" * int(self.Resolution.X) * int(self.Resolution.Y)
         #Re-encode to bytes from string, then decode bytes using base64
-        decoded = codecs.decode(self.SampleBase64.encode(), 'base64')
+        # decoded = codecs.decode(self.SampleBase64.encode(), 'base64')
+        data = self._decode_bs64(self.SampleBase64, data_format)
         #Unpack the data
-        data = struct.unpack(data_format, decoded)
+        # data = struct.unpack(data_format, decoded)
         #Reshape the data as a numpy array and save over the string
         self.SampleBase64 = np.array(data).reshape(int(self.Resolution.X), int(self.Resolution.Y))
 

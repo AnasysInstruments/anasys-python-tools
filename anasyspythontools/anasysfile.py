@@ -8,6 +8,8 @@
 #  redistributed or modified without explict permission of the author.
 
 import xml.etree.ElementTree as ET   #for parsing XML
+import codecs
+import struct
 
 class AnasysElement(object):
     """Blank object for storing xml data"""
@@ -91,3 +93,8 @@ class AnasysFile(AnasysElement):
         else:
             key += ' ({})'.format(copy)
             return self._check_key(key, _dict, copy)
+
+    def _decode_bs64(self, data, fmt):
+        decoded_bytes = codecs.decode(data.encode(), 'base64')
+        structured_data = struct.unpack(fmt, decoded_bytes)
+        return structured_data

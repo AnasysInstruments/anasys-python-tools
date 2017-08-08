@@ -7,12 +7,17 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 import numpy as np
+import matplotlib
+matplotlib.use("TkAgg") #Keeps tk from crashing on fial dialog open
 import matplotlib.pyplot as plt
 import codecs
 import struct
+import math
 import tkinter as tk
 from tkinter import filedialog
 import anasysfile
+
+
 
 class HMElement(anasysfile.AnasysElement):
     pass
@@ -22,6 +27,7 @@ class HeightMap():
     def __init__(self, hm):
         self._convert_tags(hm)
         self._handle_img_data()
+        # self.savefig('something.png')
 
     def __dir__(self):
         #Returns a list of user-accessible attributes
@@ -70,7 +76,7 @@ class HeightMap():
     def _plot(self, **kwargs):
         """Generates a pyplot image of height map for saving or viewing"""
         axes = [0, int(self.Size.X), 0, int(self.Size.Y)]
-        _max = np.absolute(self.SampleBase64).max()
+        _max = math.ceil(np.absolute(self.SampleBase64).max())
         #Set color bar range to [-y, +y] where y is abs(max(minval, maxval)) rounded up to the nearest 5
         rmax = _max
         print((_max //5) % 5)
@@ -78,38 +84,42 @@ class HeightMap():
             rmax = (_max // 5)*5 + 5
         imshow_args = {'cmap':'gray', 'interpolation':'none', 'extent':axes, 'vmin':-rmax, 'vmax':rmax}
         imshow_args.update(kwargs)
-        print(imshow_args)
-        plt.cla()
-        #Display height image
-        plt.imshow(self.SampleBase64, **imshow_args)
+        # configure style if specified
+        if "style" in imshow_args.keys():
+            plt.style.use(imshow_args.pop("style"))
+        #Clear and display height image
+        plt.gcf().clear()
+        img = plt.imshow(self.SampleBase64, **imshow_args)
         #Set titles
         plt.xlabel('μm')
         plt.ylabel('μm')
-        # plt.title(self.Label)
         #Adds color bar with units displayed
         units = self.Units
         if self.UnitPrefix != {}:
             units = self.UnitPrefix + self.Units
-        plt.colorbar().remove()
-        plt.colorbar().set_label(units)
+        x = plt.colorbar().set_label(units)
         #Set window title
         plt.gcf().canvas.set_window_title("placeholder")#self.label)
         return plt
 
     def show(self, **kwargs):
-        """Opens an mpl gui window with image data. Options are documented:
+        """
+        Opens an mpl gui window with image data. Options are documented:
         https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.imshow
+        Style can be specified with 'style' flag. Options:
+        pyplot.style.options:
+        https://tonysyu.github.io/raw_content/matplotlib-style-gallery/gallery.html
         """
         if type(self.SampleBase64) == dict:
         #Don't do anything if list is empty
             print("Error: No image data in HeightMap object")
             return
         #Do all the plotting
-        plot = self._plot(cmap="rainbow")
+        img = self._plot(**kwargs)
         #Display image
-        plot.show()
+        img.show()
 
-    def savefig(self, fname=None, **kwargs):
+    def savefig(self, fname='', **kwargs):
         """
         Gets the plot from self._plot(), then saves. Options are documented:
         https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.savefig
@@ -119,22 +129,20 @@ class HeightMap():
             print("Error: No image data in HeightMap object")
             return
         #Do all the plotting
-        plt = self._plot()
+        img = self._plot()
         #File types for save
         ftypes = (("Portable Network Graphics (*.png)", "*.png"),
-                ("Portable Document Format(*.pdf)", "*.pdf"),
-                ("Encapsulated Postscript (*.eps)", "*.eps"),
-                ("Postscript (*.ps)", "*.pdf"),
-                ("Raw RGBA Bitmap (*.raw;*.rgba)", "*.raw;*.rgba"),
-                ("Scalable Vector Graphics (*.svg;*.svgz)", "*.svg;*.svgz"),
-                ("All files", "*.*"))
+                  ("Portable Document Format(*.pdf)", "*.pdf"),
+                  ("Encapsulated Postscript (*.eps)", "*.eps"),
+                  ("Postscript (*.ps)", "*.pdf"),
+                  ("Raw RGBA Bitmap (*.raw;*.rgba)", "*.raw;*.rgba"),
+                  ("Scalable Vector Graphics (*.svg;*.svgz)", "*.svg;*.svgz"),
+                  ("All files", "*.*"))
         #Test for presense of filename and get one if needed
-        if fname is None:
+        if fname == '':
             fname = tk.filedialog.asksaveasfilename(filetypes=ftypes, defaultextension=".png", initialfile="HeightMap.png")
-        if fname == None or fname == "":
+        if fname == '':
             print("ERROR: User failed to provide filename. Abort save command.")
             return
-        # if options is not None:
-        #     plt.save(fname, options)
-        #     return
+        #If they made it this far, save (fname given)
         plt.savefig(fname, **kwargs)

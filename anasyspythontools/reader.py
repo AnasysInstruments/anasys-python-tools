@@ -14,9 +14,10 @@ def main():
     hms = []
     for key, hm in f.HeightMaps.items():
         hm.show()
-    # print(dir(f))
-    # print(dir(f.HeightMaps['Height 1'].Tags))
-    # print(f.HeightMaps['Height 1'].Tags.Tag)
+    print(dir(f))
+    print(dir(f.HeightMaps['Height 1'].Tags))
+    print(f.HeightMaps['Height 1'].Tags.Tag)
+    print(f['HeightMaps'])
         # hm.savefig()
     # r = anasys_file.read('./test/test data/TappingModeimage3.axz')
     # r = anasys_file.read('./test/test data/TappingModeimage.axx')

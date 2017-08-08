@@ -12,6 +12,12 @@ class AnasysElement(object):
     def __dir__(self):
         #Returns a list of user-accessible attributes
         return [x for x in object.__dir__(self) if x[0]!='_']
+    def __getitem__(self, key):
+        items = dir(self)
+        if key in items:
+            return getattr(self, key)
+        else:
+            raise KeyError
 
 class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""

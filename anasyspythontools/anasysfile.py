@@ -15,15 +15,17 @@ class AnasysElement(object):
 
 class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
-    
+
     def __init__(self):
+        #tags to be skipped when parsing etree data into objects
         self._skip_tags = {}
 
-    def _convert_tags(self, element, parent_obj=None, skip_tags=self._skip_tags):
+    def _convert_tags(self, element, parent_obj=None, sp_skip_tags={}):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
         # If element is a key in skip_tags, set special return value
-        if element.tag in skip_tags.keys():
-            return skip_tags[element.tag]
+        self._skip_tags.update(sp_skip_tags)
+        if element.tag in self._skip_tags.keys():
+            return self._skip_tags[element.tag]
         #If element has no children, return either it's text or {}
         if list(element) == []:
             if element.text:

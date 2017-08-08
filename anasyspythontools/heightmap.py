@@ -17,48 +17,43 @@ import tkinter as tk
 from tkinter import filedialog
 import anasysfile
 
-
-
-class HMElement(anasysfile.AnasysElement):
-    pass
-
-class HeightMap():
+class HeightMap(anasysfile.AnasysFile):
     """A data structure for holding HeightMap data"""
 
     def __init__(self, hm):
+        anasysfile.AnasysFile.__init__(self)
         self._convert_tags(hm)
         self._handle_img_data()
-        # self.savefig('something.png')
 
     def __dir__(self):
         #Returns a list of user-accessible attributes
         return [x for x in dir(self) if x[0]!='_']
 
-    def _convert_tags(self, element, parent_obj=None):
-        """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
-        #If element has no children, return either it's text or {}
-        if list(element) == []:
-            if element.text:
-                #Default return value for an element with text
-                return element.text
-            else:
-                #Default return value for an empty tree leaf/XML tag
-                return {}
-        #If element has children, return an object with its children
-        else:
-            #Default case, create blank object to add attributes to
-            element_obj = HMElement()
-            #Top level case, we want to add to self, rather than blank object
-            if parent_obj == None:
-                element_obj = self
-            #Loop over each child and add attributes
-            for child in element:
-                #Get recursion return value - either text, {} or HMElement() instance
-                rr = self._convert_tags(child, element)
-                #Set element_obj.child_tag = rr
-                setattr(element_obj, child.tag, rr)
-            #Return the object containing all children and attributes
-            return element_obj
+    # def _convert_tags(self, element, parent_obj=None):
+    #     """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
+    #     #If element has no children, return either it's text or {}
+    #     if list(element) == []:
+    #         if element.text:
+    #             #Default return value for an element with text
+    #             return element.text
+    #         else:
+    #             #Default return value for an empty tree leaf/XML tag
+    #             return {}
+    #     #If element has children, return an object with its children
+    #     else:
+    #         #Default case, create blank object to add attributes to
+    #         element_obj = HMElement()
+    #         #Top level case, we want to add to self, rather than blank object
+    #         if parent_obj == None:
+    #             element_obj = self
+    #         #Loop over each child and add attributes
+    #         for child in element:
+    #             #Get recursion return value - either text, {} or HMElement() instance
+    #             rr = self._convert_tags(child, element)
+    #             #Set element_obj.child_tag = rr
+    #             setattr(element_obj, child.tag, rr)
+    #         #Return the object containing all children and attributes
+    #         return element_obj
 
     def _handle_img_data(self):
         """Converts bytestring into numpy array of correct size and shape"""
@@ -80,7 +75,6 @@ class HeightMap():
         _max = math.ceil(np.absolute(self.SampleBase64).max())
         #Set color bar range to [-y, +y] where y is abs(max(minval, maxval)) rounded up to the nearest 5
         rmax = _max
-        print((_max //5) % 5)
         if (_max //5) % 5 != 0:
             rmax = (_max // 5)*5 + 5
         imshow_args = {'cmap':'gray', 'interpolation':'none', 'extent':axes, 'vmin':-rmax, 'vmax':rmax}

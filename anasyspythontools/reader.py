@@ -10,8 +10,8 @@
 import anasysdoc
 
 def main():
-    # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
-    f = anasysdoc.read('./test/test data/TappingModeimage.axz')
+    f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
+    # f = anasysdoc.read('./test/test data/TappingModeimage.axz')
 
     hms = []
     for key, hm in f.HeightMaps.items():

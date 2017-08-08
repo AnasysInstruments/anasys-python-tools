@@ -27,7 +27,7 @@ class HeightMap(anasysfile.AnasysFile):
         self._convert_tags(hm)
         self._handle_img_data()
         self._skip_tags = {'Tags':{}}
-        print(dir(self))
+        print(self.ZMax)
 
     def _handle_img_data(self):
         """Converts bytestring into numpy array of correct size and shape"""
@@ -46,12 +46,12 @@ class HeightMap(anasysfile.AnasysFile):
     def _plot(self, **kwargs):
         """Generates a pyplot image of height map for saving or viewing"""
         axes = [0, float(self.Size.X), 0, float(self.Size.Y)]
-        # _max = math.ceil(np.absolute(self.SampleBase64).max())
-        _max = np.absolute(self.SampleBase64).max()
         #Set color bar range to [-y, +y] where y is abs(max(minval, maxval)) rounded up to the nearest 5
-        rmax = _max
-        # if (_max //5) % 5 != 0:
-        #     rmax = (_max // 5)*5 + 5
+        if self.ZMax == 'INF':
+            _max = np.absolute(self.SampleBase64).max()
+            rmax = (_max // 5)*5 + 5
+        else:
+            rmax = float(self.ZMax)/2
         imshow_args = {'cmap':'gray', 'interpolation':'none', 'extent':axes, 'vmin':-rmax, 'vmax':rmax}
         imshow_args.update(kwargs)
         # configure style if specified
@@ -69,7 +69,7 @@ class HeightMap(anasysfile.AnasysFile):
             units = self.UnitPrefix + self.Units
         x = plt.colorbar().set_label(units)
         #Set window title
-        plt.gcf().canvas.set_window_title("placeholder")#self.label)
+        plt.gcf().canvas.set_window_title(self.Label)
         return plt
 
     def show(self, **kwargs):

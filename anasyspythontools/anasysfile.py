@@ -7,12 +7,23 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 
+import xml.etree.ElementTree as ET   #for parsing XML
+
 class AnasysElement(object):
     """Blank object for storing xml data"""
-    def __dir__(self):
-        #Returns a list of user-accessible attributes
-        return [x for x in object.__dir__(self) if x[0]!='_']
+
+    def __dir__(self, pretty=False):
+        """Returns a list of user-accessible attributes"""
+        vars_and_funcs = [x for x in object.__dir__(self) if x[0]!='_']
+        #Format functions nicely, e.g. foo() instead of foo
+        # for index, var in enumerate(vars_and_funcs):
+        #     if callable(getattr(self, var)):
+        #         newvar = var + '()'
+        #         vars_and_funcs[index] = newvar
+        return vars_and_funcs
+
     def __getitem__(self, key):
+        """Class attributes can be called by subscription, e.g. Foo['bar']"""
         items = dir(self)
         if key in items:
             return getattr(self, key)
@@ -23,19 +34,19 @@ class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
 
     def __init__(self):
-        #tags to be skipped when parsing etree data into objects
-        self._skip_tags = {}
+        self._skip_tags = {}    #tags to skip when converting elements to objects
+        self._attributes = []   #list of dicts of tags:attributes, where applicable
 
-    def _attr_to_children(self, et_obj, prepend=''):
+    def _attr_to_children(self, et_elem, prepend=''):
         """
         Convert element attributes of given etree object to child elements, and prepend a string/char for later ID.
         """
-        raise NotImplementedError
-        for key, val in src_root.items():
-            setattr(self, key, val)
-        for neighbor in src_root.iter():
-            if neighbor.attrib:
-                print(neighbor.attrib)
+        for elem in et_elem.iter():
+            if elem.attrib:
+                for k, v in elem.items():
+                    ET.SubElement(elem, prepend + k)
+                    elem.find(prepend + k).text = v
+                    self._attributes.append({elem.tag: prepend + k})
 
     def _convert_tags(self, element, parent_obj=None):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""

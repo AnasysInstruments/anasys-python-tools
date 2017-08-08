@@ -13,7 +13,7 @@ matplotlib.use("TkAgg") #Keeps tk from crashing on fial dialog open
 import matplotlib.pyplot as plt
 import codecs
 import struct
-import math
+# import math
 import tkinter as tk
 from tkinter import filedialog
 import anasysfile
@@ -23,9 +23,11 @@ class HeightMap(anasysfile.AnasysFile):
 
     def __init__(self, hm):
         anasysfile.AnasysFile.__init__(self)
+        self._attr_to_children(hm)
         self._convert_tags(hm)
         self._handle_img_data()
         self._skip_tags = {'Tags':{}}
+        print(dir(self))
 
     def _handle_img_data(self):
         """Converts bytestring into numpy array of correct size and shape"""
@@ -43,12 +45,13 @@ class HeightMap(anasysfile.AnasysFile):
 
     def _plot(self, **kwargs):
         """Generates a pyplot image of height map for saving or viewing"""
-        axes = [0, int(self.Size.X), 0, int(self.Size.Y)]
-        _max = math.ceil(np.absolute(self.SampleBase64).max())
+        axes = [0, float(self.Size.X), 0, float(self.Size.Y)]
+        # _max = math.ceil(np.absolute(self.SampleBase64).max())
+        _max = np.absolute(self.SampleBase64).max()
         #Set color bar range to [-y, +y] where y is abs(max(minval, maxval)) rounded up to the nearest 5
         rmax = _max
-        if (_max //5) % 5 != 0:
-            rmax = (_max // 5)*5 + 5
+        # if (_max //5) % 5 != 0:
+        #     rmax = (_max // 5)*5 + 5
         imshow_args = {'cmap':'gray', 'interpolation':'none', 'extent':axes, 'vmin':-rmax, 'vmax':rmax}
         imshow_args.update(kwargs)
         # configure style if specified

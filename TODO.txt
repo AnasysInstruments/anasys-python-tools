@@ -30,3 +30,6 @@ FIGURE OUT HOW TO FIX RELATIVE IMPORTS
 
 #Irksome
 Make Auto range scaling of HeightMap._plot() better, more consistent.
+
+
+#TESTS

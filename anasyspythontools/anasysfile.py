@@ -11,7 +11,7 @@ class AnasysElement(object):
     """Blank object for storing xml data"""
     def __dir__(self):
         #Returns a list of user-accessible attributes
-        return [x for x in dir(self) if x[0]!='_']
+        return [x for x in object.__dir__(self) if x[0]!='_']
 
 class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
@@ -20,10 +20,20 @@ class AnasysFile(AnasysElement):
         #tags to be skipped when parsing etree data into objects
         self._skip_tags = {}
 
-    def _convert_tags(self, element, parent_obj=None, sp_skip_tags={}):
+    def _attr_to_children(self, et_obj, prepend=''):
+        """
+        Convert element attributes of given etree object to child elements, and prepend a string/char for later ID.
+        """
+        raise NotImplementedError
+        for key, val in src_root.items():
+            setattr(self, key, val)
+        for neighbor in src_root.iter():
+            if neighbor.attrib:
+                print(neighbor.attrib)
+
+    def _convert_tags(self, element, parent_obj=None):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
         # If element is a key in skip_tags, set special return value
-        self._skip_tags.update(sp_skip_tags)
         if element.tag in self._skip_tags.keys():
             return self._skip_tags[element.tag]
         #If element has no children, return either it's text or {}
@@ -64,27 +74,3 @@ class AnasysFile(AnasysElement):
         else:
             key += ' ({})'.format(copy)
             return self._check_key(key, _dict, copy)
-
-
-
-
-    # def _convert_tags(self, element):
-    #     """Iterates through element tree object and converts to python dicts"""
-    #     new_obj = {}
-    #     if element.tag == 'HeightMaps':
-    #         #taken care of elsewhere
-    #         return {}
-    #     if element.tag == 'RenderedSpectra':
-    #         #taken care of elsewhere
-    #         return {}
-    #     if list(element) == []:
-    #         #element has no children - return either text or {}
-    #         if element.text:
-    #             return element.text
-    #         else:
-    #             return {}
-    #     else:
-    #         #element has children - loop through and recurse on each
-    #         for child in element:
-    #             new_obj[child.tag] = self._convert_tags(child)
-    #         return new_obj

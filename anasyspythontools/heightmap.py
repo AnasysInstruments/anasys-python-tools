@@ -24,6 +24,7 @@ class HMElement(anasysfile.AnasysElement):
 
 class HeightMap():
     """A data structure for holding HeightMap data"""
+
     def __init__(self, hm):
         self._convert_tags(hm)
         self._handle_img_data()

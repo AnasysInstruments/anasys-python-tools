@@ -15,8 +15,15 @@ class AnasysElement(object):
 
 class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
-    def _convert_tags(self, element, parent_obj=None, skip_elements=[]):
+    
+    def __init__(self):
+        self._skip_tags = {}
+
+    def _convert_tags(self, element, parent_obj=None, skip_tags=self._skip_tags):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
+        # If element is a key in skip_tags, set special return value
+        if element.tag in skip_tags.keys():
+            return skip_tags[element.tag]
         #If element has no children, return either it's text or {}
         if list(element) == []:
             if element.text:
@@ -40,3 +47,42 @@ class AnasysFile(AnasysElement):
                 setattr(element_obj, child.tag, rr)
             #Return the object containing all children and attributes
             return element_obj
+
+    def _check_key(self, key, _dict, copy=1):
+        """Check if key is in dict. If it is, increment key until key is unique, and return"""
+        if key not in _dict:
+            return key
+        num_list = re.findall('\s\((\d+)\)', key)
+        if num_list != [] and key[-1] == ')':
+            copy = int(num_list[-1])
+        index = key.find(' ({})'.format(copy))
+        if index != -1:
+            key = key[:index] + ' ({})'.format(copy+1)
+            return self._check_key(key, _dict, copy+1)
+        else:
+            key += ' ({})'.format(copy)
+            return self._check_key(key, _dict, copy)
+
+
+
+
+    # def _convert_tags(self, element):
+    #     """Iterates through element tree object and converts to python dicts"""
+    #     new_obj = {}
+    #     if element.tag == 'HeightMaps':
+    #         #taken care of elsewhere
+    #         return {}
+    #     if element.tag == 'RenderedSpectra':
+    #         #taken care of elsewhere
+    #         return {}
+    #     if list(element) == []:
+    #         #element has no children - return either text or {}
+    #         if element.text:
+    #             return element.text
+    #         else:
+    #             return {}
+    #     else:
+    #         #element has children - loop through and recurse on each
+    #         for child in element:
+    #             new_obj[child.tag] = self._convert_tags(child)
+    #         return new_obj

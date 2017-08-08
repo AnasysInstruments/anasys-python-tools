@@ -45,21 +45,6 @@ class AnasysDoc():
             mapdict[key] = heightmap.HeightMap(_map)
         return mapdict
 
-    def _check_key(self, key, _dict, copy=1):
-        """Check if key is in dict. If it is, increment key until key is unique, and return"""
-        if key not in _dict:
-            return key
-        num_list = re.findall('\s\((\d+)\)', key)
-        if num_list != [] and key[-1] == ')':
-            copy = int(num_list[-1])
-        index = key.find(' ({})'.format(copy))
-        if index != -1:
-            key = key[:index] + ' ({})'.format(copy+1)
-            return self._check_key(key, _dict, copy+1)
-        else:
-            key += ' ({})'.format(copy)
-            return self._check_key(key, _dict, copy)
-
     def _convert_tags(self, element):
         """Iterates through element tree object and converts to python dicts"""
         new_obj = {}

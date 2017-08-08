@@ -67,16 +67,21 @@ class HeightMap():
         #Reshape the data as a numpy array and save over the string
         self.SampleBase64 = np.array(data).reshape(int(self.Resolution.X), int(self.Resolution.Y))
 
-    def _plot(self, plt_opts = {}):
+    def _plot(self, **kwargs):
         """Generates a pyplot image of height map for saving or viewing"""
         axes = [0, int(self.Size.X), 0, int(self.Size.Y)]
         _max = np.absolute(self.SampleBase64).max()
         #Set color bar range to [-y, +y] where y is abs(max(minval, maxval)) rounded up to the nearest 5
         rmax = _max
+        print((_max //5) % 5)
         if (_max //5) % 5 != 0:
             rmax = (_max // 5)*5 + 5
+        imshow_args = {'cmap':'gray', 'interpolation':'none', 'extent':axes, 'vmin':-rmax, 'vmax':rmax}
+        imshow_args.update(kwargs)
+        print(imshow_args)
+        plt.cla()
         #Display height image
-        plt.imshow(self.SampleBase64, cmap='gray', interpolation='none', extent=axes, vmin=-rmax, vmax=rmax)
+        plt.imshow(self.SampleBase64, **imshow_args)
         #Set titles
         plt.xlabel('μm')
         plt.ylabel('μm')
@@ -85,21 +90,24 @@ class HeightMap():
         units = self.Units
         if self.UnitPrefix != {}:
             units = self.UnitPrefix + self.Units
+        plt.colorbar().remove()
         plt.colorbar().set_label(units)
         #Set window title
-        plt.gcf().canvas.set_window_title()#self.label)
+        plt.gcf().canvas.set_window_title("placeholder")#self.label)
         return plt
 
-    def show(self):
-        """Opens an mpl gui window with image data"""
+    def show(self, **kwargs):
+        """Opens an mpl gui window with image data. Options are documented:
+        https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.imshow
+        """
         if type(self.SampleBase64) == dict:
         #Don't do anything if list is empty
             print("Error: No image data in HeightMap object")
             return
         #Do all the plotting
-        plt = self._plot()
+        plot = self._plot(cmap="rainbow")
         #Display image
-        plt.show()
+        plot.show()
 
     def savefig(self, fname=None, **kwargs):
         """

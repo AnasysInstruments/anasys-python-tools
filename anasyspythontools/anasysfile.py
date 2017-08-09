@@ -33,6 +33,12 @@ class AnasysElement(object):
         else:
             raise KeyError
 
+    def __iter__(self):
+        #Make loop through all objects
+        for obj in dir(self):
+            if not callable(obj):
+                yield obj
+
 class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
 
@@ -40,12 +46,6 @@ class AnasysFile(AnasysElement):
         # self._base_64_tags = {} #dict of bs64 data-containing tags : data formats
         self._skip_tags = {}    #tags to skip when converting elements to objects
         self._attributes = []   #list of dicts of tags:attributes, where applicable
-
-    def __iter__(self):
-        #Make loop through all objects
-        #for obj in dir(self):
-            # return element
-        pass
 
     def _attr_to_children(self, et_elem, prepend=''):
         """

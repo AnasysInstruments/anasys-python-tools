@@ -13,7 +13,8 @@ def main():
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
     # f = anasysdoc.read('./test/test data/PMMA spectra 1.axd')
     f = anasysdoc.read('./test/test data/TappingModeimage.axz')
-    
+    for i in f:
+        print(i, f[i])
     # hms = []
     # for key, hm in f.HeightMaps.items():
         # hm.show()

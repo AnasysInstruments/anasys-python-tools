@@ -9,11 +9,8 @@
 
 import numpy as np
 import matplotlib
-matplotlib.use("TkAgg") #Keeps tk from crashing on fial dialog open
+matplotlib.use("TkAgg") #Keeps tk from crashing on final dialog open
 import matplotlib.pyplot as plt
-# import codecs
-# import struct
-# import math
 import tkinter as tk
 from tkinter import filedialog
 import anasysfile
@@ -23,26 +20,24 @@ class HeightMap(anasysfile.AnasysFile):
 
     def __init__(self, hm):
         anasysfile.AnasysFile.__init__(self)
+        # self._base_64_tags.update(self._get_base_64_tags(hm))
         self._skip_tags = {'Tags':{}}
         self._attr_to_children(hm)
         self._convert_tags(hm)
         self._handle_img_data()
 
-
     def _handle_img_data(self):
         """Converts bytestring into numpy array of correct size and shape"""
-        if self.SampleBase64 == {}:
-            print("No Height Image Data")
-            return
+        # if self.SampleBase64 == {}:
+        #     print("No Height Image Data")
+        #     return
         #Format structure is Xres * Yres floating points (returns a tuple)
-        data_format = "f" * int(self.Resolution.X) * int(self.Resolution.Y)
-        #Re-encode to bytes from string, then decode bytes using base64
-        # decoded = codecs.decode(self.SampleBase64.encode(), 'base64')
-        data = self._decode_bs64(self.SampleBase64, data_format)
-        #Unpack the data
-        # data = struct.unpack(data_format, decoded)
+        # data_format = "f" * int(self.Resolution.X) * int(self.Resolution.Y)
+        # Get decoded data
+        # data = self._decode_bs64(self.SampleBase64, data_format)
         #Reshape the data as a numpy array and save over the string
-        self.SampleBase64 = np.array(data).reshape(int(self.Resolution.X), int(self.Resolution.Y))
+        # self.SampleBase64 = np.array(data).reshape(int(self.Resolution.X), int(self.Resolution.Y))
+        self.SampleBase64 = self.SampleBase64.reshape(int(self.Resolution.X), int(self.Resolution.Y))
 
     def _plot(self, **kwargs):
         """Generates a pyplot image of height map for saving or viewing"""

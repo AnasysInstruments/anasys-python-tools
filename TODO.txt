@@ -27,7 +27,6 @@ Default templates for HMs Spectra and AF doc types
 Write unit tests!!! Would be easier if relative imports were working , so
 FIGURE OUT HOW TO FIX RELATIVE IMPORTS
 
-
 #Irksome
 Make Auto range scaling of HeightMap._plot() better, more consistent.
 Make it so numbers are not stored as strings

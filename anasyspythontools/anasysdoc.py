@@ -87,14 +87,14 @@ class AnasysDoc(anasysfile.AnasysFile):
         """Opens an axd file and returns its content as an ElementTree object"""
         f_data = ET.iterparse(_f_path)
         f_data = self._strip_namespace(f_data)
-        return f_data #returns an ET.iterparse object
+        return f_data
 
     def _open_axz(self, _f_path):
         """Opens an axz file and returns its content as an ElementTree object"""
         with gzip.open(_f_path) as f:
             f_data = ET.iterparse(f)
             f_data = self._strip_namespace(f_data)
-        return f_data #returns an ET.iterparse object
+        return f_data
 
 def read(f):
     x = AnasysDoc(f)

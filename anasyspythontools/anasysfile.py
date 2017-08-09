@@ -10,6 +10,7 @@
 import xml.etree.ElementTree as ET   #for parsing XML
 import codecs
 import struct
+import numpy as np
 
 class AnasysElement(object):
     """Blank object for storing xml data"""
@@ -36,8 +37,15 @@ class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
 
     def __init__(self):
+        # self._base_64_tags = {} #dict of bs64 data-containing tags : data formats
         self._skip_tags = {}    #tags to skip when converting elements to objects
         self._attributes = []   #list of dicts of tags:attributes, where applicable
+
+    def __iter__(self):
+        #Make loop through all objects
+        #for obj in dir(self):
+            # return element
+        pass
 
     def _attr_to_children(self, et_elem, prepend=''):
         """
@@ -52,9 +60,12 @@ class AnasysFile(AnasysElement):
 
     def _convert_tags(self, element, parent_obj=None):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
-        # If element is a key in skip_tags, set special return value
+        # If element is a key in _skip_tags, set special return value
         if element.tag in self._skip_tags.keys():
             return self._skip_tags[element.tag]
+        #If element is a key in _base_64_tags, return decoded data
+        if '64' in element.tag:
+            return self._decode_bs64(element.text)
         #If element has no children, return either it's text or {}
         if list(element) == []:
             if element.text:
@@ -93,8 +104,25 @@ class AnasysFile(AnasysElement):
         else:
             key += ' ({})'.format(copy)
             return self._check_key(key, _dict, copy)
-
-    def _decode_bs64(self, data, fmt):
+    #
+    # def _get_fmt(self, data_str):
+    #     pass
+    #     return fmt
+    #
+    # def _get_base_64_tags(self, elem):
+    #     """Gets bs64 and returns a dict to update _base_64_tags"""
+    #     tag_fmt_dict = {}
+    #     for element in elem.iter():
+    #         if '64' in elem.text:
+    #             fmt = self._get_fmt(elem.text)
+    #             tag_fmt_dict[elem.tag] = fmt
+    #     return tag_fmt_dict
+    #
+    #     return
+    def _decode_bs64(self, data):
+        """Returns base64 data decoded in a numpy array"""
         decoded_bytes = codecs.decode(data.encode(), 'base64')
+        fmt = 'f'*int((len(decoded_bytes)/4))
         structured_data = struct.unpack(fmt, decoded_bytes)
-        return structured_data
+        decoded_array = np.array(structured_data)
+        return decoded_array

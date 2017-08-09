@@ -30,6 +30,7 @@ FIGURE OUT HOW TO FIX RELATIVE IMPORTS
 
 #Irksome
 Make Auto range scaling of HeightMap._plot() better, more consistent.
-
+Make it so numbers are not stored as strings
+Spectra are too nested. Make easy top-level functions for users to pull spectra
 
 #TESTS

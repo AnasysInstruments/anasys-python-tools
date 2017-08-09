@@ -23,10 +23,11 @@ class HeightMap(anasysfile.AnasysFile):
 
     def __init__(self, hm):
         anasysfile.AnasysFile.__init__(self)
+        self._skip_tags = {'Tags':{}}
         self._attr_to_children(hm)
         self._convert_tags(hm)
         self._handle_img_data()
-        self._skip_tags = {'Tags':{}}
+
 
     def _handle_img_data(self):
         """Converts bytestring into numpy array of correct size and shape"""
@@ -116,3 +117,7 @@ class HeightMap(anasysfile.AnasysFile):
             return
         #If they made it this far, save (fname given)
         plt.savefig(fname, **kwargs)
+
+
+#TODO Need to handle Tags
+#TODO Need to write self back into etree

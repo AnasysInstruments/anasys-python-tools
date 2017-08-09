@@ -12,6 +12,7 @@ import gzip                          #for unzipping .axz files
 import os
 import anasysfile
 import heightmap
+import irspectra
 import re
 
 class AnasysDoc(anasysfile.AnasysFile):
@@ -25,8 +26,20 @@ class AnasysDoc(anasysfile.AnasysFile):
         doc_root = self._get_etree(f_name)
         self._convert_tags(doc_root)
         self.HeightMaps = self._get_height_maps(doc_root.find('HeightMaps'))
+        self.RenderedSpectra = self._get_rendered_spectra(doc_root.find('RenderedSpectra'))
+        # print(dir(self.RenderedSpectra['Spectrum 1'].DataChannels))
+        #print(self.RenderedSpectra)#['Spectrum 1'].DataChannels.Name)
         #3. pull out Spectra
         #4. pull out anything else important
+
+    def _get_rendered_spectra(self, spectra):
+        """Returns a list of IRRenderedSpectra"""
+        spectradict = {}
+        for spectrum in spectra:
+            key = spectrum.find('Label').text
+            key = self._check_key(key, spectradict)
+            spectradict[key] = irspectra.IRRenderedSpectra(spectrum)
+        return spectradict
 
     def _get_height_maps(self, maps):
         """Takes an iterable of Height Maps, and returns a dict of HeightMap objects"""

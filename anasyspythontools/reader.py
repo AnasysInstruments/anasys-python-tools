@@ -13,8 +13,10 @@ def main():
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
     # f = anasysdoc.read('./test/test data/PMMA spectra 1.axd')
     f = anasysdoc.read('./test/test data/TappingModeimage.axz')
-    for i in f:
-        print(i, f[i])
+
+    # for i in f.HeightMaps['Height 1']:
+    #     print(i)
+    print(f.HeightMaps['Height 1']._attributes)
     # hms = []
     # for key, hm in f.HeightMaps.items():
         # hm.show()
@@ -28,6 +30,17 @@ def main():
     # r = anasys_file.read('./test/test data/TappingModeimage.axd')
     # print(r)
 
+    # a = np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
+    # # print(a)
+    # b = a.reshape(4,4)
+    # c = a.reshape(2,8)
+    # d = c.reshape(8,2)
+    # e = b.reshape(16)
+    # # print(b)
+    # # print(e)
+    # print(a)
+    # print(c)
+    # print(d)
 if __name__ == '__main__':
     # import argparse
     main()

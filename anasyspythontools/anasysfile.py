@@ -18,11 +18,6 @@ class AnasysElement(object):
     def __dir__(self, pretty=False):
         """Returns a list of user-accessible attributes"""
         vars_and_funcs = [x for x in object.__dir__(self) if x[0]!='_']
-        #Format functions nicely, e.g. foo() instead of foo
-        # for index, var in enumerate(vars_and_funcs):
-        #     if callable(getattr(self, var)):
-        #         newvar = var + '()'
-        #         vars_and_funcs[index] = newvar
         return vars_and_funcs
 
     def __getitem__(self, key):
@@ -54,9 +49,11 @@ class AnasysFile(AnasysElement):
         for elem in et_elem.iter():
             if elem.attrib:
                 for k, v in elem.items():
+                    print(elem, k, v)
                     ET.SubElement(elem, prepend + k)
                     elem.find(prepend + k).text = v
-                    self._attributes.append({elem.tag: prepend + k})
+                    #FIXME below
+                    self._attributes.append({elem.tag: {prepend + k, v}})
 
     def _convert_tags(self, element, parent_obj=None):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""

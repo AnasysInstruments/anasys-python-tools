@@ -7,12 +7,12 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 
-import anasysdoc
+import anasysio
 
 def main():
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
     # f = anasysdoc.read('./test/test data/PMMA spectra 1.axd')
-    f = anasysdoc.read('./test/test data/TappingModeimage.axz')
+    f = anasysio.read('./test/test data/TappingModeimage.axz')
 
     # for i in f.HeightMaps['Height 1']:
     #     print(i)

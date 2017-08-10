@@ -21,19 +21,15 @@ class HeightMap(anasysfile.AnasysFile):
     def __init__(self, hm):
         anasysfile.AnasysFile.__init__(self)
         # self._base_64_tags.update(self._get_base_64_tags(hm))
-        self._skip_tags = {'Tags':{}}
+        self._skip_tags = {'Tags':self._handle_tags}
         self._attr_to_children(hm)
-        self._handle_tags(hm)
+        # self._handle_tags(hm)
         self._convert_tags(hm)
         #Rearrange data into correct array size
         self.SampleBase64 = self.SampleBase64.reshape(int(self.Resolution.X), int(self.Resolution.Y))
 
     def _handle_tags(self, hm):
         pass
-        for elem in hm.iter():
-            if elem == 'Tags':
-                for tag in elem:
-                    pass
 
     def _plot(self, **kwargs):
         """Generates a pyplot image of height map for saving or viewing"""

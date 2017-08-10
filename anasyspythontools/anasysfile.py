@@ -11,6 +11,7 @@ import xml.etree.ElementTree as ET   #for parsing XML
 import codecs
 import struct
 import numpy as np
+import re
 
 class AnasysElement(object):
     """Blank object for storing xml data"""

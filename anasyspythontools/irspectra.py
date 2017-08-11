@@ -20,6 +20,7 @@ class IRRenderedSpectra(anasysfile.AnasysFile):
 
     def __init__(self, sp):
         self._special_tags = {'DataChannels': self._get_data_channels}
+        self.DataChannels = {}
         anasysfile.AnasysFile.__init__(self, sp)
 
 

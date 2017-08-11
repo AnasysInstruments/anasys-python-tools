@@ -24,6 +24,17 @@ class AnasysDoc(anasysfile.AnasysFile):
         """Returns a list of IRRenderedSpectra"""
         spectradict = {}
         for spectrum in spectra:
+            #Mangle etree so DataChannels get stuck in a parent 'DataChannels' element
+            #FIXME Not Working
+            spectrum.makeelement('temp', {})
+            print(list(spectrum))
+            spectrum.find('temp').extend(spectrum.findall('DataChannels'))
+            for dc in spectrum.findall('DataChannels'):
+                spectrum.remove(dc)
+            spectrum.makeelement('DataChannels', {})
+            spectrum.find('DataChannels').extend(temp.findall('DataChannels'))
+            spectrum.remove(spectrum.find('temp'))
+            #End mangling
             self._attr_to_children(spectrum)
             key = spectrum.find('Label').text
             key = self._check_key(key, spectradict)

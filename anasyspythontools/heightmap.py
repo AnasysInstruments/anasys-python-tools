@@ -19,17 +19,18 @@ class HeightMap(anasysfile.AnasysFile):
     """A data structure for holding HeightMap data"""
 
     def __init__(self, hm):
-        anasysfile.AnasysFile.__init__(self)
-        # self._base_64_tags.update(self._get_base_64_tags(hm))
-        self._skip_tags = {'Tags':self._handle_tags}
-        self._attr_to_children(hm)
-        # self._handle_tags(hm)
-        self._convert_tags(hm)
+        self._special_tags = {'Tags': self._handle_tags}
+        anasysfile.AnasysFile.__init__(self, hm)
         #Rearrange data into correct array size
         self.SampleBase64 = self.SampleBase64.reshape(int(self.Resolution.X), int(self.Resolution.Y))
 
-    def _handle_tags(self, hm):
-        pass
+    def _handle_tags(self, element):
+        """Turn tags into a dict of dicts"""
+        tag_dict = {}
+        for tag in list(element):
+            self._attr_to_children(tag)
+            tag_dict[tag.find('Name').text] = tag.find('Value').text
+        return tag_dict
 
     def _plot(self, **kwargs):
         """Generates a pyplot image of height map for saving or viewing"""

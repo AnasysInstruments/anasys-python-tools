@@ -11,12 +11,14 @@ import anasysio
 
 def main():
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
-    # f = anasysdoc.read('./test/test data/PMMA spectra 1.axd')
-    f = anasysio.read('./test/test data/TappingModeimage.axz')
-
+    f = anasysio.read('./test/test data/PMMA spectra 1.axd')
+    # f = anasysio.read('./test/test data/TappingModeimage.axz')
+    # print(f.HeightMaps['Height 1']._attributes)
+    # print(dir(f.HeightMaps['Height 1']))
+    # print(f.HeightMaps)
     # for i in f.HeightMaps['Height 1']:
     #     print(i)
-    print(f.HeightMaps['Height 1']._attributes)
+    # print(f.HeightMaps['Height 1']._attributes)
     # hms = []
     # for key, hm in f.HeightMaps.items():
         # hm.show()
@@ -29,6 +31,12 @@ def main():
     # r = anasys_file.read('./test/test data/TappingModeimage.axx')
     # r = anasys_file.read('./test/test data/TappingModeimage.axd')
     # print(r)
+    # print(f.RenderedSpectra['Spectrum 1'].AttenuationBase64)
+    # print()
+    # print(f.RenderedSpectra['Spectrum 1'].BeamShapeFactorBase64)
+    # print()
+    print(f.RenderedSpectra['Spectrum 1'].DataChannels)
+    # print(f.RenderedSpectra['Spectrum 1'].DataChannels['IR-Peak'].SampleBase64)
 
     # a = np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
     # # print(a)

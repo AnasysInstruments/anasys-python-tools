@@ -38,29 +38,33 @@ class AnasysElement(object):
 class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
 
-    def __init__(self):
-        # self._base_64_tags = {} #dict of bs64 data-containing tags : data formats
-        self._skip_tags = {}    #tags to skip when converting elements to objects
+    def __init__(self, root):
         self._attributes = []   #list of dicts of tags:attributes, where applicable
+        if not self._special_tags:
+            self._special_tags = {}
+        self._convert_tags(root)
+        # print(self._special_tags)
 
-    def _attr_to_children(self, et_elem, prepend=''):
+    def _attr_to_children(self, et_elem):
         """
-        Convert element attributes of given etree object to child elements, and prepend a string/char for later ID.
+        Convert element attributes of given etree object to child elements. Keep track of them in member variable.
         """
-        for elem in et_elem.iter():
-            if elem.attrib:
-                for k, v in elem.items():
-                    print(elem, k, v)
-                    ET.SubElement(elem, prepend + k)
-                    elem.find(prepend + k).text = v
-                    #FIXME below
-                    self._attributes.append({elem.tag: {prepend + k, v}})
+        for attr in et_elem.items():
+            ET.SubElement(et_elem, attr[0])
+            et_elem.find(attr[0]).text = attr[1]
+        self._attributes.append({et_elem.tag: et_elem.items()})
 
     def _convert_tags(self, element, parent_obj=None):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
-        # If element is a key in _skip_tags, set special return value
-        if element.tag in self._skip_tags.keys():
-            return self._skip_tags[element.tag]
+        #If element has attributes, make them subchildren before continuing
+        if element.items() != []:
+            self._attr_to_children(element)
+        # If element is a key in _special_tags, set special return value
+        if element.tag in self._special_tags.keys():
+            if callable(self._special_tags[element.tag]):
+                return self._special_tags[element.tag](element)
+            else:
+                return self._special_tags[element.tag]
         #If element is a key in _base_64_tags, return decoded data
         if '64' in element.tag:
             return self._decode_bs64(element.text)
@@ -102,21 +106,7 @@ class AnasysFile(AnasysElement):
         else:
             key += ' ({})'.format(copy)
             return self._check_key(key, _dict, copy)
-    #
-    # def _get_fmt(self, data_str):
-    #     pass
-    #     return fmt
-    #
-    # def _get_base_64_tags(self, elem):
-    #     """Gets bs64 and returns a dict to update _base_64_tags"""
-    #     tag_fmt_dict = {}
-    #     for element in elem.iter():
-    #         if '64' in elem.text:
-    #             fmt = self._get_fmt(elem.text)
-    #             tag_fmt_dict[elem.tag] = fmt
-    #     return tag_fmt_dict
-    #
-    #     return
+
     def _decode_bs64(self, data):
         """Returns base64 data decoded in a numpy array"""
         decoded_bytes = codecs.decode(data.encode(), 'base64')

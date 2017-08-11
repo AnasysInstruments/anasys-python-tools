@@ -23,21 +23,17 @@ class IRRenderedSpectra(anasysfile.AnasysFile):
         self.DataChannels = {}
         anasysfile.AnasysFile.__init__(self, sp)
 
-
-
-    def _get_data_channels(self, sp):
+    def _get_data_channels(self, datachannels):
         """Returns a list of the DataChannel objects"""
         dcdict = {}
-        for dc in sp.findall('DataChannels'):
-            # print(dc)
+        for dc in datachannels:
             key = dc.find('Name').text
             key = self._check_key(key, dcdict)
             dcdict[key] = DataChannel(dc)
-        # print(dcdict)
         return dcdict
 
 class DataChannel(anasysfile.AnasysFile):
     """Data structure for holding spectral Data"""
 
     def __init__(self, dc):
-        anasysfile.AnasysFile.__init__(self)
+        anasysfile.AnasysFile.__init__(self, dc)

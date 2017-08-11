@@ -40,7 +40,7 @@ class AnasysFile(AnasysElement):
 
     def __init__(self, root):
         self._attributes = []   #list of dicts of tags:attributes, where applicable
-        if not self._special_tags:
+        if not hasattr(self, '_special_tags'):
             self._special_tags = {}
         self._convert_tags(root)
         # print(self._special_tags)

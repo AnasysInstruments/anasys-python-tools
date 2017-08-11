@@ -7,6 +7,7 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 
+import xml.etree.ElementTree as ET   #for parsing XML
 import anasysfile
 import heightmap
 import irspectra
@@ -25,17 +26,16 @@ class AnasysDoc(anasysfile.AnasysFile):
         spectradict = {}
         for spectrum in spectra:
             #Mangle etree so DataChannels get stuck in a parent 'DataChannels' element
-            #FIXME Not Working
-            spectrum.makeelement('temp', {})
-            print(list(spectrum))
-            spectrum.find('temp').extend(spectrum.findall('DataChannels'))
             for dc in spectrum.findall('DataChannels'):
+                tempdc = ET.SubElement(spectrum, 'tempdc')
+                self._attr_to_children(dc)
+                tempdc.extend(dc)
                 spectrum.remove(dc)
-            spectrum.makeelement('DataChannels', {})
-            spectrum.find('DataChannels').extend(temp.findall('DataChannels'))
-            spectrum.remove(spectrum.find('temp'))
+            datachannels = ET.SubElement(spectrum, 'DataChannels')
+            datachannels.extend(spectrum.findall('tempdc'))
+            for temp in spectrum.findall('tempdc'):
+                spectrum.remove(temp)
             #End mangling
-            self._attr_to_children(spectrum)
             key = spectrum.find('Label').text
             key = self._check_key(key, spectradict)
             spectradict[key] = irspectra.IRRenderedSpectra(spectrum)

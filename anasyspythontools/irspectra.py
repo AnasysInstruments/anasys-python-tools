@@ -18,10 +18,10 @@ import anasysfile
 class IRRenderedSpectra(anasysfile.AnasysFile):
     """A data structure for holding HeightMap data"""
 
-    def __init__(self, sp):
+    def __init__(self, irrenderedspectra):
         self._special_tags = {'DataChannels': self._get_data_channels}
-        self.DataChannels = {}
-        anasysfile.AnasysFile.__init__(self, sp)
+        # self.DataChannels = {}
+        anasysfile.AnasysFile.__init__(self, irrenderedspectra)
 
     def _get_data_channels(self, datachannels):
         """Returns a list of the DataChannel objects"""
@@ -35,5 +35,21 @@ class IRRenderedSpectra(anasysfile.AnasysFile):
 class DataChannel(anasysfile.AnasysFile):
     """Data structure for holding spectral Data"""
 
-    def __init__(self, dc):
-        anasysfile.AnasysFile.__init__(self, dc)
+    def __init__(self, datachannels):
+        anasysfile.AnasysFile.__init__(self, datachannels)
+
+class Background(anasysfile.AnasysFile):
+    """Data structure for holding background data"""
+
+    def __init__(self, background):
+        self._special_tags = {'Table': self._get_table}
+        anasysfile.AnasysFile.__init__(self, background)
+
+    def _get_table(self, table): # 126
+        table_data = []
+        for double in table:
+            table_data.append(float(double.text))
+            table.remove(double)
+        table_data = np.array(table_data)
+        print(len(table_data))
+        return table_data

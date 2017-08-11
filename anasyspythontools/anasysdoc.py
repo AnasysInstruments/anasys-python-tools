@@ -7,7 +7,7 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 
-import xml.etree.ElementTree as ET   #for parsing XML
+import xml.etree.ElementTree as ET
 import anasysfile
 import heightmap
 import irspectra
@@ -17,12 +17,13 @@ class AnasysDoc(anasysfile.AnasysFile):
     def __init__(self, ftree):
         self._special_tags = {'HeightMaps': self._get_height_maps,
                               'RenderedSpectra':self._get_rendered_spectra,
+                              'Backgrounds': self._get_backgrounds,
                               'SpectraChannelViews': {}}
         anasysfile.AnasysFile.__init__(self, ftree)
         # self.RenderedSpectra = self._get_rendered_spectra(ftree.find('RenderedSpectra'))
 
     def _get_rendered_spectra(self, spectra):
-        """Returns a list of IRRenderedSpectra"""
+        """Returns a dict of IRRenderedSpectra"""
         spectradict = {}
         for spectrum in spectra:
             #Mangle etree so DataChannels get stuck in a parent 'DataChannels' element
@@ -50,3 +51,12 @@ class AnasysDoc(anasysfile.AnasysFile):
             key = self._check_key(key, mapdict)
             mapdict[key] = heightmap.HeightMap(_map)
         return mapdict
+
+    def _get_backgrounds(self, backgrounds):
+        """Returns a list of the Background objects"""
+        bgdict = {}
+        for bg in backgrounds:
+            key = bg.find('ID').text
+            key = self._check_key(key, bgdict)
+            bgdict[key] = irspectra.Background(bg)
+        return bgdict

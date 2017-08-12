@@ -8,6 +8,9 @@
 #  redistributed or modified without explict permission of the author.
 
 import xml.etree.ElementTree as ET
+# from . import anasysfile
+# from . import heightmap
+# from . import irspectra
 import anasysfile
 import heightmap
 import irspectra

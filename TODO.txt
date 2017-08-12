@@ -1,7 +1,6 @@
 #Required
-Add ability to manipulate HM.show() with mpl option flags in **kwargs
-Finish save() function()
-redo AnasysFile()._convert_tags() to convert to objects not dicts
+Add IRB capabilities
+FIX READ/WRITE in anasysio (should return appropriate object, not just docs)
 add xml, axz, axd, csv to save options (eventually hdf5?)
 optionally, split save functions into save and export image or something like that
 Get spectra class done

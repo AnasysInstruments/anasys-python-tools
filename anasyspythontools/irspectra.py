@@ -13,6 +13,7 @@ matplotlib.use("TkAgg") #Keeps tk from crashing on fial dialog open
 import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import filedialog
+# from . import anasysfile
 import anasysfile
 
 class IRRenderedSpectra(anasysfile.AnasysFile):
@@ -20,7 +21,6 @@ class IRRenderedSpectra(anasysfile.AnasysFile):
 
     def __init__(self, irrenderedspectra):
         self._special_tags = {'DataChannels': self._get_data_channels}
-        # self.DataChannels = {}
         anasysfile.AnasysFile.__init__(self, irrenderedspectra)
 
     def _get_data_channels(self, datachannels):
@@ -51,5 +51,4 @@ class Background(anasysfile.AnasysFile):
             table_data.append(float(double.text))
             table.remove(double)
         table_data = np.array(table_data)
-        print(len(table_data))
         return table_data

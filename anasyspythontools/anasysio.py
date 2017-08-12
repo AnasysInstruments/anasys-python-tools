@@ -8,26 +8,28 @@
 #  redistributed or modified without explict permission of the author.
 
 import anasysdoc
+# from . import anasysdoc
 import xml.etree.ElementTree as ET   #for parsing XML
 import gzip                          #for unzipping .axz files
 import os
 
 class AnasysFileReader():
     """A class for reading Anasys file data"""
-    def __init__(self, fn):
-        self.doc = self._get_etree(fn)
+    def __init__(self, f_name):
+        self._f_types = ['.axd', '.axz', '.irb']
+        self._doc = self._get_etree(f_name)
 
     def _get_extension(self, _f_path):
         """Returns the extension of a file, given the file path"""
-        ext = os.path.splitext(_f_path)[1][1:].lower()
+        ext = os.path.splitext(_f_path)[1].lower()
+        if ext not in self._f_types:
+            raise ValueError("File type must be .axz, .axd, or .irb")
         return ext
 
     def _check_path(self, _f_path):
         """Checks for errors with file existance and type"""
         if not os.path.isfile(_f_path):
             raise FileNotFoundError()
-        if not (_f_path.lower().endswith(".axz") or _f_path.lower().endswith(".axd")):
-            raise ValueError("File type must be .axz or .axd")
 
     def _get_etree(self, f_name):
         """Main function for reading in data from axz or axd files and returns a top-level etree object"""
@@ -38,9 +40,9 @@ class AnasysFileReader():
         #get the file extension
         ext = self._get_extension(self._f_path)
         #get the xml data from axz or axd
-        if ext == 'axz':
+        if ext == '.axz':
             f_xml = self._open_axz(self._f_path)
-        else:
+        elif ext == '.axd':
             f_xml = self._open_axd(self._f_path)
         return f_xml.root
 
@@ -64,5 +66,5 @@ class AnasysFileReader():
         return f_data
 
 def read(fn):
-    doc = AnasysFileReader(fn).doc
+    doc = AnasysFileReader(fn)._doc
     return anasysdoc.AnasysDoc(doc)

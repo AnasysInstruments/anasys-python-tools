@@ -6,8 +6,9 @@
 #
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
-
+import numpy as np
 import anasysio
+from matplotlib import pyplot as plt
 
 def main():
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
@@ -35,7 +36,15 @@ def main():
     # print()
     # print(f.RenderedSpectra['Spectrum 1'].BeamShapeFactorBase64)
     # print()
-    # print(f.RenderedSpectra['Spectrum 1'].DataChannels['IR-Peak'].SampleBase64)
+    # print("RotaryPolarizerMotorPositionBase64",f.RenderedSpectra['Spectrum 2'].RotaryPolarizerMotorPositionBase64)
+    # print("BeamShapeFactorBase64",f.RenderedSpectra['Spectrum 2'].BeamShapeFactorBase64)
+    # print("AttenuationBase64",f.RenderedSpectra['Spectrum 2'].AttenuationBase64)
+
+    y = f.RenderedSpectra['Spectrum 2'].DataChannels['IR-Peak'].SampleBase64
+    x = np.linspace(950, 1946, 250)
+    print(len(x))
+    plt.plot(x, y)
+    plt.show()
     # print(f.RenderedSpectra['Spectrum 1'].DataChannels['IR-Peak'].SampleBase64)
 
     # a = np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
@@ -49,6 +58,6 @@ def main():
     # print(a)
     # print(c)
     # print(d)
+
 if __name__ == '__main__':
-    # import argparse
     main()

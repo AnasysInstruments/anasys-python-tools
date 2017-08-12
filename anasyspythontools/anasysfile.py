@@ -39,7 +39,6 @@ class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
 
     def __init__(self, root):
-        print(root)
         self._attributes = []   #list of dicts of tags:attributes, where applicable
         if not hasattr(self, '_special_tags'):
             self._special_tags = {} #just in case
@@ -57,8 +56,6 @@ class AnasysFile(AnasysElement):
     def _convert_tags(self, element, parent_obj=None):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
         #If element has attributes, make them children before continuing
-        if element.tag == 'Backgrounds':
-            print(self._special_tags)
         if element.items() != []:
             self._attr_to_children(element)
         # If element is a key in _special_tags, set special return value

@@ -13,6 +13,7 @@ matplotlib.use("TkAgg") #Keeps tk from crashing on final dialog open
 import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import filedialog
+# from . import anasysfile
 import anasysfile
 
 class HeightMap(anasysfile.AnasysFile):

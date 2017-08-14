@@ -113,3 +113,11 @@ class AnasysFile(AnasysElement):
         structured_data = struct.unpack(fmt, decoded_bytes)
         decoded_array = np.array(structured_data)
         return decoded_array
+
+    def _serial_tags_to_nparray(self, parent_tag):
+        np_array = []
+        for child_tag in parent_tag:
+            np_array.append(float(child_tag.text))
+            parent_tag.remove(child_tag)
+        np_array = np.array(np_array)
+        return np_array

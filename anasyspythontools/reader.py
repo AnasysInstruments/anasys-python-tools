@@ -39,12 +39,15 @@ def main():
     # print("RotaryPolarizerMotorPositionBase64",f.RenderedSpectra['Spectrum 2'].RotaryPolarizerMotorPositionBase64)
     # print("BeamShapeFactorBase64",f.RenderedSpectra['Spectrum 2'].BeamShapeFactorBase64)
     # print("AttenuationBase64",f.RenderedSpectra['Spectrum 2'].AttenuationBase64)
-
-    y = f.RenderedSpectra['Spectrum 2'].DataChannels['IR-Peak'].SampleBase64
-    x = np.linspace(950, 1946, 250)
+    print(f.Backgrounds.values())
+    for bg in f.Backgrounds.values():
+        y = bg.Table
+    # y = f.RenderedSpectra['Spectrum 2'].DataChannels['IR-Peak'].SampleBase64
+    x = np.linspace(950, 1946, len(y))
     print(len(x))
     plt.plot(x, y)
     plt.show()
+
     # print(f.RenderedSpectra['Spectrum 1'].DataChannels['IR-Peak'].SampleBase64)
 
     # a = np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])

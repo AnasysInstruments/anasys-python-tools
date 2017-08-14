@@ -42,13 +42,19 @@ class Background(anasysfile.AnasysFile):
     """Data structure for holding background data"""
 
     def __init__(self, background):
-        self._special_tags = {'Table': self._get_table}
+        self._special_tags = {'Table': self._serial_tags_to_nparray,
+                              'AttenuatorPower': self._serial_tags_to_nparray}
         anasysfile.AnasysFile.__init__(self, background)
 
-    def _get_table(self, table): # 126
-        table_data = []
-        for double in table:
-            table_data.append(float(double.text))
-            table.remove(double)
-        table_data = np.array(table_data)
-        return table_data
+    # def _get_table(self, table): # 126
+    #     table_data = []
+    #     for double in table:
+    #         table_data.append(float(double.text))
+    #         table.remove(double)
+    #     table_data = np.array(table_data)
+    #     return table_data
+
+    # def _get_attenuatorPower(self, atpow):
+    #     pewerdata = []
+    #     for double in atpow:
+    #         at

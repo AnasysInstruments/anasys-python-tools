@@ -20,8 +20,11 @@ def main():
     # for i in f:
     #     print(i, type(i))
     f.write("./scratch/test_output.xml")
-    # f.RenderedSpectra['Spectrum 1'].write("./scratch/test_output.xml")
-    print(issubclass(irspectra.IRRenderedSpectra, anasysfile.AnasysElement))
+    # print(object.__dir__(f))
+    # # f.RenderedSpectra['Spectrum 1'].write("./scratch/test_output.xml")
+    # print(issubclass(irspectra.IRRenderedSpectra, anasysfile.AnasysElement))
+    # print(isinstance(f, anasysfile.AnasysElement))
+
     # print(f.HeightMaps['Height 1']._attributes)
     # print(dir(f.HeightMaps['Height 1']))
     # print(f.HeightMaps)

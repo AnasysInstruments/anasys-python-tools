@@ -17,6 +17,11 @@ class AnasysElement(object):
     """Blank object for storing xml data"""
     def __init__(self, parent=None):
         self._parent = parent
+        self._attributes = []   #list of dicts of tags:attributes, where applicable
+        if not hasattr(self, '_special_tags'):
+            self._special_tags = {} #just in case
+        if not hasattr(self, '_skip_on_write'):
+            self._skip_on_write = [] #just in case
 
     def __dir__(self):
         """Returns a list of user-accessible attributes"""
@@ -40,14 +45,9 @@ class AnasysElement(object):
 class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
 
-    def __init__(self, root):
+    def __init__(self, etree_data):
         AnasysElement.__init__(self)
-        self._attributes = []   #list of dicts of tags:attributes, where applicable
-        if not hasattr(self, '_special_tags'):
-            self._special_tags = {} #just in case
-        if not hasattr(self, '_skip_on_write'):
-            self._skip_on_write = [] #just in case
-        self._convert_tags(root) #really just parses the hell outta this tree
+        self._convert_tags(etree_data) #really just parses the hell outta this tree
 
     def _attr_to_children(self, et_elem):
         """
@@ -132,32 +132,46 @@ class AnasysFile(AnasysElement):
         """Return object and all sub objects as an etree object for writing"""
         root = ET.Element(name)
         for obj_name in dir(obj):
-            # print(obj_name, type(obj_name))
             if callable(obj[obj_name]):
                 continue
+            # print(obj_name, type(obj[obj_name]), obj[obj_name])
+            if obj_name in obj._skip_on_write:
+                continue
             if type(obj[obj_name]) == type({}):
-                # print("is dict")
+                print("is dict", obj_name)
                 sub = self._dict_to_etree(obj[obj_name], obj_name)
                 root.append(sub)
             elif isinstance(obj[obj_name], AnasysElement):
-                print("HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERE", obj_name)
-                print(dir(obj[obj_name]))
+                print(obj_name, "is AnasysElement")
                 sub = self._anasys_to_etree(obj[obj_name], obj_name)
                 root.append(sub)
             else:
-                # print(obj_name, type(obj), obj)
-                continue
+                sub = ET.Element(obj_name)
+                sub.text = str(obj[obj_name])
+                root.append(sub)
+                print(obj_name, type(obj[obj_name]))
+        #     else:# isinstance(obj[obj_name], AnasysElement):#AnasysElement):
+        #         print("OK", obj_name, type(obj[obj_name]))
+        #         # print(dir(obj[obj_name]))
+        #         sub = self._anasys_to_etree(obj[obj_name], obj_name)
+        #         root.append(sub)
+        #     # else:
+        #     #     # print(obj_name, type(obj), obj)
+        #     #     # print(type(self))
+        #     #     continue
         return root
 
 
     def _dict_to_etree(self, obj, name="DPlaceholder"):
         root = ET.Element(name)
         for k, v in obj.items():
-            if type(v) == type({}):
-                sub = self._dict_to_etree(v)
-            else:
-                sub = self._anasys_to_etree(v)
-            root.append(sub)
+            print(k, v)
+            # if type(v) == type({}):
+            #     sub = self._dict_to_etree(v)
+            # else:
+            #     sub = self._anasys_to_etree(v)
+            # root.append(sub)
+        print('returning', name)
         return root
 
     def write(self, filename):

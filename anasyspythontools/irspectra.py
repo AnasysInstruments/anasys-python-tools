@@ -20,8 +20,11 @@ class IRRenderedSpectra(anasysfile.AnasysFile):
     """A data structure for holding HeightMap data"""
 
     def __init__(self, irrenderedspectra):
+        # self._parent = parent #parent object (Document)
         self._special_tags = {'DataChannels': self._get_data_channels}
+        self._skip_on_write = ['Background'] #objects to skip when writing back to xml
         anasysfile.AnasysFile.__init__(self, irrenderedspectra)
+        self.Background = self._get_background() #get bg associated with this spectra
 
     def _get_data_channels(self, datachannels):
         """Returns a list of the DataChannel objects"""
@@ -31,6 +34,10 @@ class IRRenderedSpectra(anasysfile.AnasysFile):
             key = self._check_key(key, dcdict)
             dcdict[key] = DataChannel(dc)
         return dcdict
+
+    def _get_background(self):
+        pass
+        # return self._parent.Backgrounds[self.BackgroundID]
 
 class DataChannel(anasysfile.AnasysFile):
     """Data structure for holding spectral Data"""

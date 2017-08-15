@@ -6,7 +6,7 @@
 #
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
-
+from xml.dom import minidom #Unfortunately required as ElementTree won't pretty format xml
 import xml.etree.ElementTree as ET   #for parsing XML
 import codecs
 import struct
@@ -15,8 +15,10 @@ import re
 
 class AnasysElement(object):
     """Blank object for storing xml data"""
+    def __init__(self, parent=None):
+        self._parent = parent
 
-    def __dir__(self, pretty=False):
+    def __dir__(self):
         """Returns a list of user-accessible attributes"""
         vars_and_funcs = [x for x in object.__dir__(self) if x[0]!='_']
         return vars_and_funcs
@@ -30,18 +32,21 @@ class AnasysElement(object):
             raise KeyError
 
     def __iter__(self):
-        #Make loop through all objects
+        """Makes object iterable. Returns all user-accessible, non-method, attributes"""
         for obj in dir(self):
-            if not callable(obj):
-                yield obj
+            if not callable(self[obj]):
+                yield self[obj]
 
 class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
 
     def __init__(self, root):
+        AnasysElement.__init__(self)
         self._attributes = []   #list of dicts of tags:attributes, where applicable
         if not hasattr(self, '_special_tags'):
             self._special_tags = {} #just in case
+        if not hasattr(self, '_skip_on_write'):
+            self._skip_on_write = [] #just in case
         self._convert_tags(root) #really just parses the hell outta this tree
 
     def _attr_to_children(self, et_elem):
@@ -78,7 +83,7 @@ class AnasysFile(AnasysElement):
         #If element has children, return an object with its children
         else:
             #Default case, create blank object to add attributes to
-            element_obj = AnasysElement()
+            element_obj = AnasysElement(self)
             #Top level case, we want to add to self, rather than blank object
             if parent_obj == None:
                 element_obj = self
@@ -115,9 +120,50 @@ class AnasysFile(AnasysElement):
         return decoded_array
 
     def _serial_tags_to_nparray(self, parent_tag):
+        """Return floats listed consecutively (e.g., background tables) as numpy array"""
         np_array = []
         for child_tag in parent_tag:
             np_array.append(float(child_tag.text))
             parent_tag.remove(child_tag)
         np_array = np.array(np_array)
         return np_array
+
+    def _anasys_to_etree(self, obj, name="APlaceholder"):
+        """Return object and all sub objects as an etree object for writing"""
+        root = ET.Element(name)
+        for obj_name in dir(obj):
+            # print(obj_name, type(obj_name))
+            if callable(obj[obj_name]):
+                continue
+            if type(obj[obj_name]) == type({}):
+                # print("is dict")
+                sub = self._dict_to_etree(obj[obj_name], obj_name)
+                root.append(sub)
+            elif isinstance(obj[obj_name], AnasysElement):
+                print("HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERE", obj_name)
+                print(dir(obj[obj_name]))
+                sub = self._anasys_to_etree(obj[obj_name], obj_name)
+                root.append(sub)
+            else:
+                # print(obj_name, type(obj), obj)
+                continue
+        return root
+
+
+    def _dict_to_etree(self, obj, name="DPlaceholder"):
+        root = ET.Element(name)
+        for k, v in obj.items():
+            if type(v) == type({}):
+                sub = self._dict_to_etree(v)
+            else:
+                sub = self._anasys_to_etree(v)
+            root.append(sub)
+        return root
+
+    def write(self, filename):
+        """Writes the current object to file"""
+        # print(self)
+        xml = self._anasys_to_etree(self, 'Document')
+        with open(filename, 'wb') as f:
+            xmlstr = minidom.parseString(ET.tostring(xml)).toprettyxml(indent="  ", encoding='UTF-16')
+            f.write(xmlstr)

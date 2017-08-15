@@ -19,9 +19,10 @@ import anasysfile
 class HeightMap(anasysfile.AnasysFile):
     """A data structure for holding HeightMap data"""
 
-    def __init__(self, hm):
+    def __init__(self, heightmap):
+        # self._parent = parent
         self._special_tags = {'Tags': self._handle_tags}
-        anasysfile.AnasysFile.__init__(self, hm)
+        anasysfile.AnasysFile.__init__(self, heightmap)
         #Rearrange data into correct array size
         self.SampleBase64 = self.SampleBase64.reshape(int(self.Resolution.X), int(self.Resolution.Y))
 
@@ -108,5 +109,4 @@ class HeightMap(anasysfile.AnasysFile):
         plt.savefig(fname, **kwargs)
 
 
-#TODO Need to handle Tags
 #TODO Need to write self back into etree

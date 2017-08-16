@@ -42,6 +42,51 @@ class AnasysElement(object):
             if not callable(self[obj]):
                 yield self[obj]
 
+    def _anasys_to_etree(self, obj, name="APlaceholder"):
+        """Return object and all sub objects as an etree object for writing"""
+        # Create new element for appending tags to
+        elem = ET.Element(name)
+        #Loop through all user-accessible member variables
+        for obj_name in dir(obj):
+            #Skip over if it's a method
+            if callable(obj[obj_name]):
+                continue
+            #Skip over anything in objects _skip_on_write variables
+            if obj_name in obj._skip_on_write:
+                continue
+            #Special case if dictionary is encountered
+            if type(obj[obj_name]) == type({}):
+                # sub = self._dict_to_etree(obj[obj_name], obj_name)
+                sub = obj._dict_to_etree(obj[obj_name], obj_name)
+            #Case for generic AnasysElement
+            elif isinstance(obj[obj_name], AnasysElement):
+                sub = self._anasys_to_etree(obj[obj_name], obj_name)
+                sub = obj._anasys_to_etree(obj[obj_name], obj_name)
+            #Return base64 data re-encoded as a string
+            elif '64' in obj_name:
+                sub = ET.Element(obj_name)
+                sub.text = self._encode_bs64(obj[obj_name])
+            #Return anything else as element.text tag
+            else:
+                sub = ET.Element(obj_name)
+                sub.text = str(obj[obj_name])
+            #Append sub tag to element
+            elem.append(sub)
+        #Return the element
+        return elem
+
+    def _dict_to_etree(self, obj, name="DPlaceholder"):
+        elem = ET.Element(name)
+        for v in obj.values():
+            if type(v) == type({}):
+                sub = self._dict_to_etree(v)
+            else:
+                sub = self._anasys_to_etree(v)
+            elem.append(sub)
+        # print('returning', name)
+        return elem
+
+
 class AnasysFile(AnasysElement):
     """Base object for HeightMap() and AnasysDoc()"""
 
@@ -136,50 +181,7 @@ class AnasysFile(AnasysElement):
         np_array = np.array(np_array)
         return np_array
 
-    def _anasys_to_etree(self, obj, name="APlaceholder"):
-        """Return object and all sub objects as an etree object for writing"""
-        # Create new element for appending tags to
-        elem = ET.Element(name)
-        #Loop through all user-accessible member variables
-        for obj_name in dir(obj):
-            #Skip over if it's a method
-            if callable(obj[obj_name]):
-                continue
-            #Skip over anything in objects _skip_on_write variables
-            if obj_name in obj._skip_on_write:
-                continue
-            #Special case if dictionary is encountered
-            if type(obj[obj_name]) == type({}):
-                # sub = self._dict_to_etree(obj[obj_name], obj_name)
-                sub = obj._dict_to_etree(obj[obj_name], obj_name)
-            #Case for generic AnasysElement
-            elif isinstance(obj[obj_name], AnasysElement):
-                sub = self._anasys_to_etree(obj[obj_name], obj_name)
-                sub = obj._anasys_to_etree(obj[obj_name], obj_name)
-            #Return base64 data re-encoded as a string
-            elif '64' in obj_name:
-                sub = ET.Element(obj_name)
-                sub.text = self._encode_bs64(obj[obj_name])
-            #Return anything else as element.text tag
-            else:
-                sub = ET.Element(obj_name)
-                sub.text = str(obj[obj_name])
-            #Append sub tag to element
-            elem.append(sub)
-        #Return the element
-        return elem
 
-
-    def _dict_to_etree(self, obj, name="DPlaceholder"):
-        elem = ET.Element(name)
-        for v in obj.values():
-            if type(v) == type({}):
-                sub = self._dict_to_etree(v)
-            else:
-                sub = self._anasys_to_etree(v)
-            elem.append(sub)
-        # print('returning', name)
-        return elem
 
     def write(self, filename):
         """Writes the current object to file"""

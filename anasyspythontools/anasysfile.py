@@ -15,8 +15,8 @@ import re
 
 class AnasysElement(object):
     """Blank object for storing xml data"""
-    def __init__(self, parent=None):
-        self._parent = parent
+    def __init__(self, parent_obj=None):
+        self._parent_obj = parent_obj
         self._attributes = []   #list of dicts of tags:attributes, where applicable
         if not hasattr(self, '_special_tags'):
             self._special_tags = {} #just in case
@@ -119,6 +119,19 @@ class AnasysFile(AnasysElement):
         decoded_array = np.array(structured_data)
         return decoded_array
 
+    def _encode_bs64(self, np_array):
+        """Returns numpy array encoded as base64 string"""
+        tup = tuple(np_array.flatten())
+        fmt = 'f'*np_array.size
+        data = struct.pack(fmt, tup)
+        encoded_string = codecs.encode(data, 'base64')
+
+        # decoded_bytes = codecs.decode(data.encode(), 'base64')
+        # fmt = 'f'*int((len(decoded_bytes)/4))
+        # structured_data = struct.unpack(fmt, decoded_bytes)
+        # decoded_array = np.array(structured_data)
+        return str(np_array)
+
     def _serial_tags_to_nparray(self, parent_tag):
         """Return floats listed consecutively (e.g., background tables) as numpy array"""
         np_array = []
@@ -130,7 +143,7 @@ class AnasysFile(AnasysElement):
 
     def _anasys_to_etree(self, obj, name="APlaceholder"):
         """Return object and all sub objects as an etree object for writing"""
-        root = ET.Element(name)
+        elem = ET.Element(name)
         for obj_name in dir(obj):
             if callable(obj[obj_name]):
                 continue
@@ -138,41 +151,43 @@ class AnasysFile(AnasysElement):
             if obj_name in obj._skip_on_write:
                 continue
             if type(obj[obj_name]) == type({}):
-                print("is dict", obj_name)
+                # print("is dict", obj_name)
                 sub = self._dict_to_etree(obj[obj_name], obj_name)
-                root.append(sub)
             elif isinstance(obj[obj_name], AnasysElement):
-                print(obj_name, "is AnasysElement")
+                # print(obj_name, "is AnasysElement")
                 sub = self._anasys_to_etree(obj[obj_name], obj_name)
-                root.append(sub)
+            # if '64' in obj_name:
+            #     sub = ET.Element(obj_name)
+            #     sub.text = self._encode_bs64(obj[obj_name])
             else:
                 sub = ET.Element(obj_name)
                 sub.text = str(obj[obj_name])
-                root.append(sub)
-                print(obj_name, type(obj[obj_name]))
+            elem.append(sub)
+                # print(obj_name, type(obj[obj_name]))
+
+
         #     else:# isinstance(obj[obj_name], AnasysElement):#AnasysElement):
         #         print("OK", obj_name, type(obj[obj_name]))
         #         # print(dir(obj[obj_name]))
         #         sub = self._anasys_to_etree(obj[obj_name], obj_name)
-        #         root.append(sub)
+        #         elem.append(sub)
         #     # else:
         #     #     # print(obj_name, type(obj), obj)
         #     #     # print(type(self))
         #     #     continue
-        return root
+        return elem
 
 
     def _dict_to_etree(self, obj, name="DPlaceholder"):
-        root = ET.Element(name)
-        for k, v in obj.items():
-            print(k, v)
-            # if type(v) == type({}):
-            #     sub = self._dict_to_etree(v)
-            # else:
-            #     sub = self._anasys_to_etree(v)
-            # root.append(sub)
-        print('returning', name)
-        return root
+        elem = ET.Element(name)
+        for v in obj.values():
+            if type(v) == type({}):
+                sub = self._dict_to_etree(v)
+            else:
+                sub = self._anasys_to_etree(v)
+            elem.append(sub)
+        # print('returning', name)
+        return elem
 
     def write(self, filename):
         """Writes the current object to file"""

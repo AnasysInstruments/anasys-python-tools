@@ -15,13 +15,16 @@ import re
 
 class AnasysElement(object):
     """Blank object for storing xml data"""
-    def __init__(self, parent_obj=None):
+    def __init__(self, parent_obj=None, etree=None):
         self._parent_obj = parent_obj
         self._attributes = []   #list of dicts of tags:attributes, where applicable
         if not hasattr(self, '_special_tags'):
             self._special_tags = {} #just in case
         if not hasattr(self, '_skip_on_write'):
             self._skip_on_write = [] #just in case
+        if etree is not None:
+            self._convert_tags(etree) #really just parses the hell outta this tree
+
 
     def __dir__(self):
         """Returns a list of user-accessible attributes"""
@@ -87,12 +90,12 @@ class AnasysElement(object):
         return elem
 
 
-class AnasysFile(AnasysElement):
-    """Base object for HeightMap() and AnasysDoc()"""
-
-    def __init__(self, etree_data):
-        AnasysElement.__init__(self)
-        self._convert_tags(etree_data) #really just parses the hell outta this tree
+# class AnasysFile(AnasysElement):
+#     """Base object for HeightMap() and AnasysDoc()"""
+#
+#     def __init__(self, etree_data):
+#         AnasysElement.__init__(self)
+        # self._convert_tags(etree_data) #really just parses the hell outta this tree
 
     def _attr_to_children(self, et_elem):
         """

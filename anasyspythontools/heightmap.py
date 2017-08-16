@@ -16,13 +16,13 @@ from tkinter import filedialog
 # from . import anasysfile
 import anasysfile
 
-class HeightMap(anasysfile.AnasysFile):
+class HeightMap(anasysfile.AnasysElement):
     """A data structure for holding HeightMap data"""
 
     def __init__(self, heightmap):
         # self._parent = parent
         self._special_tags = {'Tags': self._handle_tags}
-        anasysfile.AnasysFile.__init__(self, heightmap)
+        anasysfile.AnasysElement.__init__(self, etree=heightmap)
         #Rearrange data into correct array size
         self.SampleBase64 = self.SampleBase64.reshape(int(self.Resolution.X), int(self.Resolution.Y))
 

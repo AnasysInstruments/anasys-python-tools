@@ -16,14 +16,14 @@ from tkinter import filedialog
 # from . import anasysfile
 import anasysfile
 
-class IRRenderedSpectra(anasysfile.AnasysFile):
+class IRRenderedSpectra(anasysfile.AnasysElement):
     """A data structure for holding HeightMap data"""
 
     def __init__(self, irrenderedspectra):
         # self._parent = parent #parent object (Document)
         self._special_tags = {'DataChannels': self._get_data_channels}
         self._skip_on_write = ['Background'] #objects to skip when writing back to xml
-        anasysfile.AnasysFile.__init__(self, irrenderedspectra)
+        anasysfile.AnasysElement.__init__(self, etree=irrenderedspectra)
         self.Background = self._get_background() #get bg associated with this spectra
 
     def _get_data_channels(self, datachannels):
@@ -39,19 +39,19 @@ class IRRenderedSpectra(anasysfile.AnasysFile):
         pass
         # return self._parent.Backgrounds[self.BackgroundID]
 
-class DataChannel(anasysfile.AnasysFile):
+class DataChannel(anasysfile.AnasysElement):
     """Data structure for holding spectral Data"""
 
     def __init__(self, datachannels):
-        anasysfile.AnasysFile.__init__(self, datachannels)
+        anasysfile.AnasysElement.__init__(self, etree=datachannels)
 
-class Background(anasysfile.AnasysFile):
+class Background(anasysfile.AnasysElement):
     """Data structure for holding background data"""
 
     def __init__(self, background):
         self._special_tags = {'Table': self._serial_tags_to_nparray,
                               'AttenuatorPower': self._serial_tags_to_nparray}
-        anasysfile.AnasysFile.__init__(self, background)
+        anasysfile.AnasysElement.__init__(self, etree=background)
 
     # def _get_table(self, table): # 126
     #     table_data = []

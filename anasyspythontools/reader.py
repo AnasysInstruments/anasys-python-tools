@@ -20,6 +20,7 @@ def main():
     # for i in f:
     #     print(i, type(i))
     f.write("./scratch/test_output.xml")
+
     # print(f.SpectraChannelViews)
     # print(object.__dir__(f))
     # # f.RenderedSpectra['Spectrum 1'].write("./scratch/test_output.xml")
@@ -34,7 +35,7 @@ def main():
     # print(f.HeightMaps['Height 1']._attributes)
     # hms = []
     # for key, hm in f.HeightMaps.items():
-        # hm.show()
+    #     hm.show()
     # print(dir(f))
     # print(dir(f.HeightMaps['Height 1'].Tags))
     # print(f.HeightMaps['Height 1'].Tags.Tag)

@@ -8,7 +8,7 @@
 #  redistributed or modified without explict permission of the author.
 from xml.dom import minidom #Unfortunately required as ElementTree won't pretty format xml
 import xml.etree.ElementTree as ET   #for parsing XML
-import codecs
+import base64
 import struct
 import numpy as np
 import re
@@ -113,7 +113,7 @@ class AnasysFile(AnasysElement):
 
     def _decode_bs64(self, data):
         """Returns base64 data decoded in a numpy array"""
-        decoded_bytes = codecs.decode(data.encode(), 'base64')
+        decoded_bytes = base64.b64decode(data.encode())
         fmt = 'f'*int((len(decoded_bytes)/4))
         structured_data = struct.unpack(fmt, decoded_bytes)
         decoded_array = np.array(structured_data)
@@ -123,14 +123,9 @@ class AnasysFile(AnasysElement):
         """Returns numpy array encoded as base64 string"""
         tup = tuple(np_array.flatten())
         fmt = 'f'*np_array.size
-        data = struct.pack(fmt, tup)
-        encoded_string = codecs.encode(data, 'base64')
-
-        # decoded_bytes = codecs.decode(data.encode(), 'base64')
-        # fmt = 'f'*int((len(decoded_bytes)/4))
-        # structured_data = struct.unpack(fmt, decoded_bytes)
-        # decoded_array = np.array(structured_data)
-        return str(np_array)
+        structured_data = struct.pack(fmt, *tup)
+        encoded_string = base64.b64encode(structured_data).decode()
+        return encoded_string
 
     def _serial_tags_to_nparray(self, parent_tag):
         """Return floats listed consecutively (e.g., background tables) as numpy array"""
@@ -143,38 +138,35 @@ class AnasysFile(AnasysElement):
 
     def _anasys_to_etree(self, obj, name="APlaceholder"):
         """Return object and all sub objects as an etree object for writing"""
+        # Create new element for appending tags to
         elem = ET.Element(name)
+        #Loop through all user-accessible member variables
         for obj_name in dir(obj):
+            #Skip over if it's a method
             if callable(obj[obj_name]):
                 continue
-            # print(obj_name, type(obj[obj_name]), obj[obj_name])
+            #Skip over anything in objects _skip_on_write variables
             if obj_name in obj._skip_on_write:
                 continue
+            #Special case if dictionary is encountered
             if type(obj[obj_name]) == type({}):
-                # print("is dict", obj_name)
-                sub = self._dict_to_etree(obj[obj_name], obj_name)
+                # sub = self._dict_to_etree(obj[obj_name], obj_name)
+                sub = obj._dict_to_etree(obj[obj_name], obj_name)
+            #Case for generic AnasysElement
             elif isinstance(obj[obj_name], AnasysElement):
-                # print(obj_name, "is AnasysElement")
                 sub = self._anasys_to_etree(obj[obj_name], obj_name)
-            # if '64' in obj_name:
-            #     sub = ET.Element(obj_name)
-            #     sub.text = self._encode_bs64(obj[obj_name])
+                sub = obj._anasys_to_etree(obj[obj_name], obj_name)
+            #Return base64 data re-encoded as a string
+            elif '64' in obj_name:
+                sub = ET.Element(obj_name)
+                sub.text = self._encode_bs64(obj[obj_name])
+            #Return anything else as element.text tag
             else:
                 sub = ET.Element(obj_name)
                 sub.text = str(obj[obj_name])
+            #Append sub tag to element
             elem.append(sub)
-                # print(obj_name, type(obj[obj_name]))
-
-
-        #     else:# isinstance(obj[obj_name], AnasysElement):#AnasysElement):
-        #         print("OK", obj_name, type(obj[obj_name]))
-        #         # print(dir(obj[obj_name]))
-        #         sub = self._anasys_to_etree(obj[obj_name], obj_name)
-        #         elem.append(sub)
-        #     # else:
-        #     #     # print(obj_name, type(obj), obj)
-        #     #     # print(type(self))
-        #     #     continue
+        #Return the element
         return elem
 
 

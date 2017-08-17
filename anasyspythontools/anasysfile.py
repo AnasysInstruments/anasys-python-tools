@@ -49,6 +49,7 @@ class AnasysElement(object):
     def _anasys_to_etree(self, obj, name="APlaceholder"):
         """Return object and all sub objects as an etree object for writing"""
         # Create new element for appending tags to
+        print(name, obj._attributes)
         elem = ET.Element(name)
         #Loop through all user-accessible member variables
         for obj_name in dir(obj):
@@ -104,7 +105,7 @@ class AnasysElement(object):
         for attr in et_elem.items():
             ET.SubElement(et_elem, attr[0])
             et_elem.find(attr[0]).text = attr[1]
-        self._attributes.append({et_elem.tag: et_elem.items()})
+        self._attributes.extend(et_elem.keys())
 
     def _convert_tags(self, element, parent_obj=None):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""

@@ -7,6 +7,7 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 
+import xml.etree.ElementTree as ET
 import numpy as np
 import matplotlib
 matplotlib.use("TkAgg") #Keeps tk from crashing on fial dialog open
@@ -24,16 +25,41 @@ class IRRenderedSpectra(anasysfile.AnasysElement):
         self._special_write = {}
         self._special_read = {'DataChannels': self._get_data_channels}
         self._skip_on_write = ['Background'] #objects to skip when writing back to xml
+        # a=irrenderedspectra
+        self._wrangle_data_channels(irrenderedspectra)
+        # b=irrenderedspectra
+        # print(a==b)
         anasysfile.AnasysElement.__init__(self, etree=irrenderedspectra)
         self.Background = self._get_background() #get bg associated with this spectra
+
+#         #Mangle etree so DataChannels get stuck in a parent 'DataChannels' element
+#         for dc in spectrum.findall('DataChannels'):
+#             tempdc = ET.SubElement(spectrum, 'tempdc')
+#             self._attr_to_children(dc)
+#             tempdc.extend(dc)
+#             spectrum.remove(dc)
+#         datachannels = ET.SubElement(spectrum, 'DataChannels')
+#         datachannels.extend(spectrum.findall('tempdc'))
+#         for temp in spectrum.findall('tempdc'):
+#             spectrum.remove(temp)
+#         #End mangling
+
+    def _wrangle_data_channels(self, irrenderedspectra):
+        new_datachannels = ET.SubElement(irrenderedspectra, 'temp_DataChannels')
+        for dc in irrenderedspectra.findall('DataChannels'):
+            dc.tag = 'DataChannel'
+            new_datachannels.append(dc)
+            irrenderedspectra.remove(dc)
+        new_datachannels.tag = 'DataChannels'
 
     def _get_data_channels(self, datachannels):
         """Returns a list of the DataChannel objects"""
         dcdict = {}
         for dc in datachannels:
-            key = dc.find('Name').text
+            new_dc = DataChannel(dc)
+            key = new_dc.Name
             key = self._check_key(key, dcdict)
-            dcdict[key] = DataChannel(dc)
+            dcdict[key] = new_dc
         return dcdict
 
     def _get_background(self):

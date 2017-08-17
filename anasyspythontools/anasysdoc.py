@@ -27,24 +27,34 @@ class AnasysDoc(anasysfile.AnasysElement):
         # self.RenderedSpectra = self._get_rendered_spectra(ftree.find('RenderedSpectra'))
 
     def _get_rendered_spectra(self, spectra):
-        """Returns a dict of IRRenderedSpectra"""
         spectradict = {}
         for spectrum in spectra:
-            #Mangle etree so DataChannels get stuck in a parent 'DataChannels' element
-            for dc in spectrum.findall('DataChannels'):
-                tempdc = ET.SubElement(spectrum, 'tempdc')
-                self._attr_to_children(dc)
-                tempdc.extend(dc)
-                spectrum.remove(dc)
-            datachannels = ET.SubElement(spectrum, 'DataChannels')
-            datachannels.extend(spectrum.findall('tempdc'))
-            for temp in spectrum.findall('tempdc'):
-                spectrum.remove(temp)
-            #End mangling
-            key = spectrum.find('Label').text
+            sp = irspectra.IRRenderedSpectra(spectrum)
+            key = sp.Label
             key = self._check_key(key, spectradict)
-            spectradict[key] = irspectra.IRRenderedSpectra(spectrum)
+            spectradict[key] = sp
         return spectradict
+
+
+    # def _get_rendered_spectra(self, spectra):
+    #     """Returns a dict of IRRenderedSpectra"""
+    #     spectradict = {}
+    #     for spectrum in spectra:
+    #         #Mangle etree so DataChannels get stuck in a parent 'DataChannels' element
+    #         for dc in spectrum.findall('DataChannels'):
+    #             tempdc = ET.SubElement(spectrum, 'tempdc')
+    #             self._attr_to_children(dc)
+    #             tempdc.extend(dc)
+    #             spectrum.remove(dc)
+    #         datachannels = ET.SubElement(spectrum, 'DataChannels')
+    #         datachannels.extend(spectrum.findall('tempdc'))
+    #         for temp in spectrum.findall('tempdc'):
+    #             spectrum.remove(temp)
+    #         #End mangling
+    #         key = spectrum.find('Label').text
+    #         key = self._check_key(key, spectradict)
+    #         spectradict[key] = irspectra.IRRenderedSpectra(spectrum)
+    #     return spectradict
 
     def _get_height_maps(self, maps):
         """Takes an iterable of Height Maps, and returns a dict of HeightMap objects"""

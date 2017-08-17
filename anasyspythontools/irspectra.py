@@ -21,7 +21,8 @@ class IRRenderedSpectra(anasysfile.AnasysElement):
 
     def __init__(self, irrenderedspectra):
         # self._parent = parent #parent object (Document)
-        self._special_tags = {'DataChannels': self._get_data_channels}
+        self._special_write = {}
+        self._special_read = {'DataChannels': self._get_data_channels}
         self._skip_on_write = ['Background'] #objects to skip when writing back to xml
         anasysfile.AnasysElement.__init__(self, etree=irrenderedspectra)
         self.Background = self._get_background() #get bg associated with this spectra

@@ -21,7 +21,8 @@ class HeightMap(anasysfile.AnasysElement):
 
     def __init__(self, heightmap):
         # self._parent = parent
-        self._special_tags = {'Tags': self._handle_tags}
+        self._special_write = {}
+        self._special_read = {'Tags': self._handle_tags}
         anasysfile.AnasysElement.__init__(self, etree=heightmap)
         #Rearrange data into correct array size
         self.SampleBase64 = self.SampleBase64.reshape(int(self.Resolution.X), int(self.Resolution.Y))

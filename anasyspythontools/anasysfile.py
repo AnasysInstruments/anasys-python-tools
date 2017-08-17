@@ -18,13 +18,14 @@ class AnasysElement(object):
     def __init__(self, parent_obj=None, etree=None):
         self._parent_obj = parent_obj
         self._attributes = []   #list of dicts of tags:attributes, where applicable
-        if not hasattr(self, '_special_tags'):
-            self._special_tags = {} #just in case
+        if not hasattr(self, '_special_write'):
+            self._special_write = {} #just in case
+        if not hasattr(self, '_special_read'):
+            self._special_read = {} #just in case
         if not hasattr(self, '_skip_on_write'):
             self._skip_on_write = [] #just in case
         if etree is not None:
             self._convert_tags(etree) #really just parses the hell outta this tree
-
 
     def __dir__(self):
         """Returns a list of user-accessible attributes"""
@@ -63,7 +64,7 @@ class AnasysElement(object):
                 sub = obj._dict_to_etree(obj[obj_name], obj_name)
             #Case for generic AnasysElement
             elif isinstance(obj[obj_name], AnasysElement):
-                sub = self._anasys_to_etree(obj[obj_name], obj_name)
+                # sub = self._anasys_to_etree(obj[obj_name], obj_name)
                 sub = obj._anasys_to_etree(obj[obj_name], obj_name)
             #Return base64 data re-encoded as a string
             elif '64' in obj_name:
@@ -89,7 +90,6 @@ class AnasysElement(object):
         # print('returning', name)
         return elem
 
-
 # class AnasysFile(AnasysElement):
 #     """Base object for HeightMap() and AnasysDoc()"""
 #
@@ -111,12 +111,12 @@ class AnasysElement(object):
         #If element has attributes, make them children before continuing
         if element.items() != []:
             self._attr_to_children(element)
-        # If element is a key in _special_tags, set special return value
-        if element.tag in self._special_tags.keys():
-            if callable(self._special_tags[element.tag]):
-                return self._special_tags[element.tag](element)
+        # If element is a key in _special_read, set special return value
+        if element.tag in self._special_read.keys():
+            if callable(self._special_read[element.tag]):
+                return self._special_read[element.tag](element)
             else:
-                return self._special_tags[element.tag]
+                return self._special_read[element.tag]
         #If element is a key in _base_64_tags, return decoded data
         if '64' in element.tag:
             return self._decode_bs64(element.text)
@@ -183,8 +183,6 @@ class AnasysElement(object):
             parent_tag.remove(child_tag)
         np_array = np.array(np_array)
         return np_array
-
-
 
     def write(self, filename):
         """Writes the current object to file"""

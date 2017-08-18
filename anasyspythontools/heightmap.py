@@ -7,6 +7,7 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 
+import xml.etree.ElementTree as ET
 import numpy as np
 import matplotlib
 matplotlib.use("TkAgg") #Keeps tk from crashing on final dialog open
@@ -22,6 +23,7 @@ class HeightMap(anasysfile.AnasysElement):
     def __init__(self, heightmap):
         # self._parent = parent
         self._special_write = {}
+        self._skip_on_write = ['Tags']
         self._special_read = {'Tags': self._handle_tags}
         anasysfile.AnasysElement.__init__(self, etree=heightmap)
         #Rearrange data into correct array size
@@ -30,10 +32,20 @@ class HeightMap(anasysfile.AnasysElement):
     def _handle_tags(self, element):
         """Turn tags into a dict of dicts"""
         tag_dict = {}
+        # for tag in list(element):
+        #     self._attr_to_children(tag)
+        #     tag_dict[tag.find('Name').text] = tag.find('Value').text
         for tag in list(element):
-            self._attr_to_children(tag)
-            tag_dict[tag.find('Name').text] = tag.find('Value').text
+            tag_dict[tag.get('Name')] = tag.get('Value')
         return tag_dict
+
+    def _tags_to_etree(self, tags_obj):
+        """Converts tags back to xml"""
+        root = ET.Element("Tags")
+        for k, v in tags_obj:
+            sub = ET.SubElement(root, "Tag")
+            sub.set("Name": k)
+            sub.set("Value": v)
 
     def _plot(self, **kwargs):
         """Generates a pyplot image of height map for saving or viewing"""

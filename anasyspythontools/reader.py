@@ -15,12 +15,14 @@ from matplotlib import pyplot as plt
 def main():
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
     f = anasysio.read('./test/test data/PMMA spectra 1.axd')
-    # f = anasysio.read('./test/test data/TappingModeimage.axz')
+    g = anasysio.read('./test/test data/TappingModeimage.axz')
     # f.write('blah')
+    # print(type(g.HeightMaps['Height 1'].Tags)==type({}))
     # for i in f:
     #     print(i, type(i))
-    f.write("./scratch/test_output.xml")
-
+    # f.write("./scratch/test_output.xml")
+    # print(g.HeightMaps['Height 1'].Tags)
+    g.write("./scratch/test_output2.xml")
     # print(f.SpectraChannelViews)
     # print(object.__dir__(f))
     # # f.RenderedSpectra['Spectrum 1'].write("./scratch/test_output.xml")
@@ -53,12 +55,17 @@ def main():
     # print("BeamShapeFactorBase64",f.RenderedSpectra['Spectrum 2'].BeamShapeFactorBase64)
     # print("AttenuationBase64",f.RenderedSpectra['Spectrum 2'].AttenuationBase64)
     # print(f.Backgrounds.values())
+
+    # print((*f.Backgrounds.values()).AttenuatorPower)
+    #
     # for bg in f.Backgrounds.values():
     #     y = bg.AttenuatorPower
-    # # y = f.RenderedSpectra['Spectrum 2'].DataChannels['IR-Peak'].SampleBase64
-    # x = np.linspace(950, 1946, len(y))
-    # print(len(x))
-    # plt.plot(x, y)
+    # # print(list(y))
+    # # # # y = f.RenderedSpectra['Spectrum 2'].DataChannels['IR-Peak'].SampleBase64
+    # # x = np.linspace(950, 1946, len(y))
+    # # # print(len(x))
+    # # plt.plot(x, y)
+    # f._nparray_to_serial_tags(y, "AttenuatorPower")
     # plt.show()
 
     # print(f.RenderedSpectra['Spectrum 1'].DataChannels['IR-Peak'].SampleBase64)

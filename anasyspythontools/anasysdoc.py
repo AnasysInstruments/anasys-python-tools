@@ -24,7 +24,6 @@ class AnasysDoc(anasysfile.AnasysElement):
                               'Backgrounds': self._get_backgrounds,
                               'SpectraChannelViews': {}}
         anasysfile.AnasysElement.__init__(self, etree=ftree)
-        # self.RenderedSpectra = self._get_rendered_spectra(ftree.find('RenderedSpectra'))
 
     def _get_rendered_spectra(self, spectra):
         spectradict = {}
@@ -35,44 +34,25 @@ class AnasysDoc(anasysfile.AnasysElement):
             spectradict[key] = sp
         return spectradict
 
-
-    # def _get_rendered_spectra(self, spectra):
-    #     """Returns a dict of IRRenderedSpectra"""
-    #     spectradict = {}
-    #     for spectrum in spectra:
-    #         #Mangle etree so DataChannels get stuck in a parent 'DataChannels' element
-    #         for dc in spectrum.findall('DataChannels'):
-    #             tempdc = ET.SubElement(spectrum, 'tempdc')
-    #             self._attr_to_children(dc)
-    #             tempdc.extend(dc)
-    #             spectrum.remove(dc)
-    #         datachannels = ET.SubElement(spectrum, 'DataChannels')
-    #         datachannels.extend(spectrum.findall('tempdc'))
-    #         for temp in spectrum.findall('tempdc'):
-    #             spectrum.remove(temp)
-    #         #End mangling
-    #         key = spectrum.find('Label').text
-    #         key = self._check_key(key, spectradict)
-    #         spectradict[key] = irspectra.IRRenderedSpectra(spectrum)
-    #     return spectradict
-
     def _get_height_maps(self, maps):
         """Takes an iterable of Height Maps, and returns a dict of HeightMap objects"""
         mapdict = {}
         for _map in maps:
-            self._attr_to_children(_map)
-            key = _map.find('Label').text
+            # self._attr_to_children(_map)
+            new_map = heightmap.HeightMap(_map)
+            key = new_map.Label
             key = self._check_key(key, mapdict)
-            mapdict[key] = heightmap.HeightMap(_map)
+            mapdict[key] = new_map
         return mapdict
 
     def _get_backgrounds(self, backgrounds):
         """Returns a list of the Background objects"""
         bgdict = {}
         for bg in backgrounds:
-            key = bg.find('ID').text
+            new_bg = irspectra.Background(bg)
+            key = new_bg.ID
             key = self._check_key(key, bgdict)
-            bgdict[key] = irspectra.Background(bg)
+            bgdict[key] = new_bg
         return bgdict
 
     def _write_backgrounds(self):

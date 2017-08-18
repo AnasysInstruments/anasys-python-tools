@@ -32,18 +32,6 @@ class IRRenderedSpectra(anasysfile.AnasysElement):
         anasysfile.AnasysElement.__init__(self, etree=irrenderedspectra)
         self.Background = self._get_background() #get bg associated with this spectra
 
-#         #Mangle etree so DataChannels get stuck in a parent 'DataChannels' element
-#         for dc in spectrum.findall('DataChannels'):
-#             tempdc = ET.SubElement(spectrum, 'tempdc')
-#             self._attr_to_children(dc)
-#             tempdc.extend(dc)
-#             spectrum.remove(dc)
-#         datachannels = ET.SubElement(spectrum, 'DataChannels')
-#         datachannels.extend(spectrum.findall('tempdc'))
-#         for temp in spectrum.findall('tempdc'):
-#             spectrum.remove(temp)
-#         #End mangling
-
     def _wrangle_data_channels(self, irrenderedspectra):
         new_datachannels = ET.SubElement(irrenderedspectra, 'temp_DataChannels')
         for dc in irrenderedspectra.findall('DataChannels'):
@@ -76,7 +64,9 @@ class Background(anasysfile.AnasysElement):
     """Data structure for holding background data"""
 
     def __init__(self, background):
-        self._special_tags = {'Table': self._serial_tags_to_nparray,
+        self._special_write = {'Table': self._nparray_to_serial_tags,
+                              'AttenuatorPower': self._nparray_to_serial_tags}
+        self._special_read = {'Table': self._serial_tags_to_nparray,
                               'AttenuatorPower': self._serial_tags_to_nparray}
         anasysfile.AnasysElement.__init__(self, etree=background)
 

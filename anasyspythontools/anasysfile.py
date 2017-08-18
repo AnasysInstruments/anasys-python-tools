@@ -49,10 +49,25 @@ class AnasysElement(object):
     def _anasys_to_etree(self, obj, name="APlaceholder"):
         """Return object and all sub objects as an etree object for writing"""
         # Create new element for appending tags to
-        print(name, obj._attributes)
         elem = ET.Element(name)
         #Loop through all user-accessible member variables
+        # print("START", obj, name)
+        # print(type(obj))
+        # print(dir(obj))
+        # print()
+
         for obj_name in dir(obj):
+
+            #This may need to be moved out of here
+            #Special return values
+            if name in self._special_write.keys():
+                if callable(self._special_write[name]):
+                    return self._special_write[name](element)
+                else:
+                    return self._special_write[name]
+            #Skip if it's not going back in the xml
+            if name in self._skip_on_write:
+                continue
             #Skip over if it's a method
             if callable(obj[obj_name]):
                 continue
@@ -62,10 +77,12 @@ class AnasysElement(object):
             #Special case if dictionary is encountered
             if type(obj[obj_name]) == type({}):
                 # sub = self._dict_to_etree(obj[obj_name], obj_name)
+                print("dict", obj, obj_name)
                 sub = obj._dict_to_etree(obj[obj_name], obj_name)
             #Case for generic AnasysElement
             elif isinstance(obj[obj_name], AnasysElement):
                 # sub = self._anasys_to_etree(obj[obj_name], obj_name)
+                print("anasys",obj, obj_name)
                 sub = obj._anasys_to_etree(obj[obj_name], obj_name)
             #Return base64 data re-encoded as a string
             elif '64' in obj_name:
@@ -86,17 +103,11 @@ class AnasysElement(object):
             if type(v) == type({}):
                 sub = self._dict_to_etree(v)
             else:
+                print(v, type(v))
                 sub = self._anasys_to_etree(v)
             elem.append(sub)
         # print('returning', name)
         return elem
-
-# class AnasysFile(AnasysElement):
-#     """Base object for HeightMap() and AnasysDoc()"""
-#
-#     def __init__(self, etree_data):
-#         AnasysElement.__init__(self)
-        # self._convert_tags(etree_data) #really just parses the hell outta this tree
 
     def _attr_to_children(self, et_elem):
         """
@@ -184,6 +195,14 @@ class AnasysElement(object):
             parent_tag.remove(child_tag)
         np_array = np.array(np_array)
         return np_array
+
+    def _nparray_to_serial_tags(self, np_array, tag_name):
+        """Takes a numpy array returns an etree object and of consecutive <double>flaot</double> tags"""
+        root = ET.Element(tag_name)
+        flat = np_array.flatten()
+        for x in flat:
+            ET.SubElement(root, 'Double', text=str(x))
+        return root
 
     def write(self, filename):
         """Writes the current object to file"""

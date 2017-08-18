@@ -11,6 +11,8 @@ import anasysio
 import anasysfile
 import irspectra
 from matplotlib import pyplot as plt
+import xml.etree.ElementTree as ET
+
 
 def main():
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
@@ -25,19 +27,40 @@ def main():
     g.write("./scratch/test_output2.xml")
     # print(f.SpectraChannelViews)
     # print(object.__dir__(f))
-    recurseyou(f)
+    # print(object.__dir__(g))
+    # recurseyou(f)
+    print(f._get_iterator(f))
+
+#
+#
+# def recurseyou(obj, obj_name):
+#     return_element = ET.Element()  #should be object name
+#     if obj_name
+#     elif type(obj) == dict:
+#         for k, v in obj.items():
+#             print(k, v)
+#             rr = recurseyou(v, 'placehoklder')
+#     elif isinstance(obj, anasysfile.AnasysElement):
+#         for k, v in obj.__dict__.items():
+#             if k[0] == '_':
+#                 continue
+#             print(k, v)
+#             rr = recurseyou(v)
+#     else:
+#         return obj
 
 
-def recurseyou(obj):
+
     # print(obj.__dict__)
     # print(dir(obj))
-    # # print(dict(obj))
+    # print(obj)
+    # print(dict(obj))
     # for k, v in obj.__dict__.items():
     #     # if k[0] == '_':
     #     #     continue
     #     print(k, v)
-    for k, v in obj:
-        print(k, v)
+    # for k, v in obj:
+        # print(k, v)
 
 
 

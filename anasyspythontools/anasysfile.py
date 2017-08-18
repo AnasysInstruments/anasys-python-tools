@@ -12,8 +12,10 @@ import base64
 import struct
 import numpy as np
 import re
+import collections
 
 class AnasysElement(object):
+# class AnasysElement(collections.abc.Mapping):
     """Blank object for storing xml data"""
     def __init__(self, parent_obj=None, etree=None):
         self._parent_obj = parent_obj
@@ -46,10 +48,41 @@ class AnasysElement(object):
             if not callable(self[obj]):
                 yield self[obj]
 
+    def _get_iterator(self, obj):
+        """For use with _anasys_to_etree. Returns a dict to iterate over, or None"""
+        #If obj is a dict, return its items
+        if type(obj) == dict:
+            return obj.items()
+        #If obj is derived from AnasysElement, return its user-accessible attributes that aren't in _skip_on_write
+        elif isinstance(obj, AnasysElement):
+            return {k: obj[k] for k in obj.__dict__.keys() if k[0] != '_' and k not in obj._skip_on_write}
+        #If it's something else, return None. _anasys_to_etree will test for this condition
+        else:
+            return None
+
+    def _object_to_text(self, obj):
+        """Takes an object, returns it to text to append to an etree object"""
+        if isinstance(obj, np.ndarray):
+            return self._encode_bs64(obj)
+        else:
+            return str(obj)
+
     def _anasys_to_etree(self, obj, name="APlaceholder"):
         """Return object and all sub objects as an etree object for writing"""
         # Create new element for appending tags to
+        obj_items = self._get_iterator(obj)
+        if obj_items is None:
+            return self._object_to_text()
+        elif obj_items == {}:
+            return ""
         elem = ET.Element(name)
+
+
+        for k, v in self._get_iterator(obj):
+
+
+
+
         for obj_name in dir(obj):
             #This may need to be moved out of here
             #Special return values
@@ -59,7 +92,7 @@ class AnasysElement(object):
                 else:
                     return self._special_write[name]
             #Skip if it's not going back in the xml
-            if name in self._skip_on_write:
+            elif name in self._skip_on_write:
                 continue
             #Skip over if it's a method
             if callable(obj[obj_name]):

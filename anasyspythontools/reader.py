@@ -25,6 +25,22 @@ def main():
     g.write("./scratch/test_output2.xml")
     # print(f.SpectraChannelViews)
     # print(object.__dir__(f))
+    recurseyou(f)
+
+
+def recurseyou(obj):
+    # print(obj.__dict__)
+    # print(dir(obj))
+    # # print(dict(obj))
+    # for k, v in obj.__dict__.items():
+    #     # if k[0] == '_':
+    #     #     continue
+    #     print(k, v)
+    for k, v in obj:
+        print(k, v)
+
+
+
     # # f.RenderedSpectra['Spectrum 1'].write("./scratch/test_output.xml")
     # print(issubclass(irspectra.IRRenderedSpectra, anasysfile.AnasysElement))
     # print(isinstance(f, anasysfile.AnasysElement))

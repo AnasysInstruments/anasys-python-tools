@@ -44,8 +44,9 @@ class HeightMap(anasysfile.AnasysElement):
         root = ET.Element("Tags")
         for k, v in tags_obj:
             sub = ET.SubElement(root, "Tag")
-            sub.set("Name": k)
-            sub.set("Value": v)
+            sub.set("Name", k)
+            sub.set("Value", v)
+        return root
 
     def _plot(self, **kwargs):
         """Generates a pyplot image of height map for saving or viewing"""

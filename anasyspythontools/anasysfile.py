@@ -50,14 +50,7 @@ class AnasysElement(object):
         """Return object and all sub objects as an etree object for writing"""
         # Create new element for appending tags to
         elem = ET.Element(name)
-        #Loop through all user-accessible member variables
-        # print("START", obj, name)
-        # print(type(obj))
-        # print(dir(obj))
-        # print()
-
         for obj_name in dir(obj):
-
             #This may need to be moved out of here
             #Special return values
             if name in self._special_write.keys():
@@ -77,12 +70,12 @@ class AnasysElement(object):
             #Special case if dictionary is encountered
             if type(obj[obj_name]) == type({}):
                 # sub = self._dict_to_etree(obj[obj_name], obj_name)
-                print("dict", obj, obj_name)
+                # print("dict", obj, obj_name)
                 sub = obj._dict_to_etree(obj[obj_name], obj_name)
             #Case for generic AnasysElement
             elif isinstance(obj[obj_name], AnasysElement):
                 # sub = self._anasys_to_etree(obj[obj_name], obj_name)
-                print("anasys",obj, obj_name)
+                # print("anasys",obj, obj_name)
                 sub = obj._anasys_to_etree(obj[obj_name], obj_name)
             #Return base64 data re-encoded as a string
             elif '64' in obj_name:
@@ -103,7 +96,7 @@ class AnasysElement(object):
             if type(v) == type({}):
                 sub = self._dict_to_etree(v)
             else:
-                print(v, type(v))
+                # print(v, type(v))
                 sub = self._anasys_to_etree(v)
             elem.append(sub)
         # print('returning', name)

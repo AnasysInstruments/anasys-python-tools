@@ -52,7 +52,7 @@ class AnasysElement(object):
         """For use with _anasys_to_etree. Returns a dict to iterate over, or None"""
         #If obj is a dict, return its items
         if type(obj) == dict:
-            return obj.items()
+            return obj#.items()
         #If obj is derived from AnasysElement, return its user-accessible attributes that aren't in _skip_on_write
         elif isinstance(obj, AnasysElement):
             return {k: obj[k] for k in obj.__dict__.keys() if k[0] != '_' and k not in obj._skip_on_write}
@@ -71,69 +71,88 @@ class AnasysElement(object):
         """Return object and all sub objects as an etree object for writing"""
         # Create new element for appending tags to
         obj_items = self._get_iterator(obj)
+        #Test object list for None, indicating it's time to return some text
         if obj_items is None:
-            return self._object_to_text()
-        elif obj_items == {}:
-            return ""
+            txt = self._object_to_text(obj)
+            rtn = ET.Element(name)
+            rtn.text = txt
+            return rtn
+        #Odd case where there's no text and nothing to return
+        if obj_items == {}:
+            return ET.Element(name)
+        #If it's made it this far, it's time to loop through obj_items
         elem = ET.Element(name)
-
-
-        for k, v in self._get_iterator(obj):
-
-
-
-
-        for obj_name in dir(obj):
-            #This may need to be moved out of here
+        for k, v in obj_items.items():
+            #If element was once an xml attribute, make it so again
+            try: #Too lazy to deal with the fact dicts won't have this attribute
+                if k in obj._attributes:
+                    elem.set(k, v)
+                    continue
+            except: #If axz's had unique tag names I wouldn't have to do this
+                pass
             #Special return values
-            if name in self._special_write.keys():
-                if callable(self._special_write[name]):
-                    return self._special_write[name](element)
+            if k in obj._special_write.keys():
+                if callable(obj._special_write[k]):
+                    rr =  obj._special_write[k](k, v)
                 else:
-                    return self._special_write[name]
-            #Skip if it's not going back in the xml
-            elif name in self._skip_on_write:
-                continue
-            #Skip over if it's a method
-            if callable(obj[obj_name]):
-                continue
-            #Skip over anything in objects _skip_on_write variables
-            if obj_name in obj._skip_on_write:
-                continue
-            #Special case if dictionary is encountered
-            if type(obj[obj_name]) == type({}):
-                # sub = self._dict_to_etree(obj[obj_name], obj_name)
-                # print("dict", obj, obj_name)
-                sub = obj._dict_to_etree(obj[obj_name], obj_name)
-            #Case for generic AnasysElement
-            elif isinstance(obj[obj_name], AnasysElement):
-                # sub = self._anasys_to_etree(obj[obj_name], obj_name)
-                # print("anasys",obj, obj_name)
-                sub = obj._anasys_to_etree(obj[obj_name], obj_name)
-            #Return base64 data re-encoded as a string
-            elif '64' in obj_name:
-                sub = ET.Element(obj_name)
-                sub.text = self._encode_bs64(obj[obj_name])
-            #Return anything else as element.text tag
+                    rr = obj._special_write[k]
             else:
-                sub = ET.Element(obj_name)
-                sub.text = str(obj[obj_name])
-            #Append sub tag to element
-            elem.append(sub)
-        #Return the element
+                rr = self._anasys_to_etree(v, k)
+            #Create subelement k, with a value determined by recursion
+            elem.append(rr)
         return elem
 
-    def _dict_to_etree(self, obj, name="DPlaceholder"):
-        elem = ET.Element(name)
-        for v in obj.values():
-            if type(v) == type({}):
-                sub = self._dict_to_etree(v)
-            else:
-                # print(v, type(v))
-                sub = self._anasys_to_etree(v)
-            elem.append(sub)
-        # print('returning', name)
-        return elem
+        # for obj_name in dir(obj):
+        #     #This may need to be moved out of here
+        #     #Special return values
+        #     if name in self._special_write.keys():
+        #         if callable(self._special_write[name]):
+        #             return self._special_write[name](element)
+        #         else:
+        #             return self._special_write[name]
+        #     #Skip if it's not going back in the xml
+        #     elif name in self._skip_on_write:
+        #         continue
+        #     #Skip over if it's a method
+        #     if callable(obj[obj_name]):
+        #         continue
+        #     #Skip over anything in objects _skip_on_write variables
+        #     if obj_name in obj._skip_on_write:
+        #         continue
+        #     #Special case if dictionary is encountered
+        #     if type(obj[obj_name]) == type({}):
+        #         # sub = self._dict_to_etree(obj[obj_name], obj_name)
+        #         # print("dict", obj, obj_name)
+        #         sub = obj._dict_to_etree(obj[obj_name], obj_name)
+        #     #Case for generic AnasysElement
+        #     elif isinstance(obj[obj_name], AnasysElement):
+        #         # sub = self._anasys_to_etree(obj[obj_name], obj_name)
+        #         # print("anasys",obj, obj_name)
+        #         sub = obj._anasys_to_etree(obj[obj_name], obj_name)
+        #     #Return base64 data re-encoded as a string
+        #     elif '64' in obj_name:
+        #         sub = ET.Element(obj_name)
+        #         sub.text = self._encode_bs64(obj[obj_name])
+        #     #Return anything else as element.text tag
+        #     else:
+        #         sub = ET.Element(obj_name)
+        #         sub.text = str(obj[obj_name])
+        #     #Append sub tag to element
+        #     elem.append(sub)
+        # #Return the element
+        # return elem
+
+    # def _dict_to_etree(self, obj, name="DPlaceholder"):
+    #     elem = ET.Element(name)
+    #     for v in obj.values():
+    #         if type(v) == type({}):
+    #             sub = self._dict_to_etree(v)
+    #         else:
+    #             # print(v, type(v))
+    #             sub = self._anasys_to_etree(v)
+    #         elem.append(sub)
+    #     # print('returning', name)
+    #     return elem
 
     def _attr_to_children(self, et_elem):
         """

@@ -93,13 +93,13 @@ class AnasysElement(object):
             #Special return values
             if k in obj._special_write.keys():
                 if callable(obj._special_write[k]):
-                    rr =  obj._special_write[k](k, v)
+                    elem = obj._special_write[k](name)
                 else:
-                    rr = obj._special_write[k]
+                    elem = obj._special_write[k]
             else:
                 rr = self._anasys_to_etree(v, k)
-            #Create subelement k, with a value determined by recursion
-            elem.append(rr)
+                #Create subelement k, with a value determined by recursion
+                elem.append(rr)
         return elem
 
         # for obj_name in dir(obj):

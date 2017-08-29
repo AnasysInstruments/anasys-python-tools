@@ -59,14 +59,14 @@ class AnasysDoc(anasysfile.AnasysElement):
             bgdict[key] = new_bg
         return bgdict
 
-    def _write_backgrounds(self, k, v):
-        return ET.Element(k, text="WRITE CODE TO GO HERE")
+    def _write_backgrounds(self, name):
+        return ET.Element(name, text="WRITE CODE TO GO HERE")
 
-    def _write_rendered_spectra(self, k, v):
-        return ET.Element(k, text="WRITE CODE TO GO HERE")
+    def _write_rendered_spectra(self, name):
+        return ET.Element(name, text="WRITE CODE TO GO HERE")
 
-    def _write_height_maps(self, k, v):
-        return ET.Element(k, text="WRITE CODE TO GO HERE")
+    def _write_height_maps(self, name):
+        return ET.Element(name, text="WRITE CODE TO GO HERE")
 
-    def _write_spectral_channel_views(self, k, v):
-        return ET.Element(k, text="WRITE CODE TO GO HERE")
+    def _write_spectral_channel_views(self, name):
+        return ET.Element(name, text="WRITE CODE TO GO HERE")

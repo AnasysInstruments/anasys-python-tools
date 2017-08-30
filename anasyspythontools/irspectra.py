@@ -22,7 +22,7 @@ class IRRenderedSpectra(anasysfile.AnasysElement):
 
     def __init__(self, irrenderedspectra):
         # self._parent = parent #parent object (Document)
-        self._special_write = {}
+        self._special_write = {'DataChannels': self._write_data_channels}
         self._special_read = {'DataChannels': self._get_data_channels}
         self._skip_on_write = ['Background'] #objects to skip when writing back to xml
         # a=irrenderedspectra
@@ -49,6 +49,9 @@ class IRRenderedSpectra(anasysfile.AnasysElement):
             key = self._check_key(key, dcdict)
             dcdict[key] = new_dc
         return dcdict
+
+    def _write_data_channels(self, *args, **kwargs):
+        pass
 
     def _get_background(self):
         pass

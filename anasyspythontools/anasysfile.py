@@ -93,13 +93,14 @@ class AnasysElement(object):
             #Special return values
             if k in obj._special_write.keys():
                 if callable(obj._special_write[k]):
-                    elem = obj._special_write[k](name)
+                    obj._special_write[k](elem, k)
                 else:
-                    elem = obj._special_write[k]
+                    obj._special_write[k]
             else:
                 rr = self._anasys_to_etree(v, k)
                 #Create subelement k, with a value determined by recursion
                 elem.append(rr)
+        # print("returned elem", elem)
         return elem
 
         # for obj_name in dir(obj):
@@ -167,6 +168,7 @@ class AnasysElement(object):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
         #If element has attributes, make them children before continuing
         if element.items() != []:
+            print(self, element.tag)
             self._attr_to_children(element)
         # If element is a key in _special_read, set special return value
         if element.tag in self._special_read.keys():

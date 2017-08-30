@@ -13,6 +13,7 @@ import struct
 import numpy as np
 import re
 import collections
+import decimal as DC
 
 class AnasysElement(object):
 # class AnasysElement(collections.abc.Mapping):
@@ -93,7 +94,7 @@ class AnasysElement(object):
             #Special return values
             if k in obj._special_write.keys():
                 if callable(obj._special_write[k]):
-                    obj._special_write[k](elem, k)
+                    obj._special_write[k](elem, k, v)
                 else:
                     obj._special_write[k]
             else:
@@ -130,7 +131,7 @@ class AnasysElement(object):
                 return element.text
             else:
                 #Default return value for an empty tree leaf/XML tag
-                return {}
+                return ""
         #If element has children, return an object with its children
         else:
             #Default case, create blank object to add attributes to
@@ -183,23 +184,23 @@ class AnasysElement(object):
     def _serial_tags_to_nparray(self, parent_tag):
         """Return floats listed consecutively (e.g., background tables) as numpy array"""
         np_array = []
-        for child_tag in parent_tag:
-            np_array.append(float(child_tag.text))
+        for child_tag in list(parent_tag):
+            np_array.append(DC.Decimal(child_tag.text))
             parent_tag.remove(child_tag)
         np_array = np.array(np_array)
         return np_array
 
-    def _nparray_to_serial_tags(self, np_array, tag_name):
+    def _nparray_to_serial_tags(self, elem, nom, np_array):
         """Takes a numpy array returns an etree object and of consecutive <double>flaot</double> tags"""
-        root = ET.Element(tag_name)
+        root = ET.Element(nom)
         flat = np_array.flatten()
         for x in flat:
-            ET.SubElement(root, 'Double', text=str(x))
-        return root
+            el = ET.SubElement(root, 'Double')
+            el.text=str(x)
+        elem.append(root)
 
     def write(self, filename):
         """Writes the current object to file"""
-        # print(self)
         xml = self._anasys_to_etree(self, 'Document')
         with open(filename, 'wb') as f:
             xmlstr = minidom.parseString(ET.tostring(xml)).toprettyxml(indent="  ", encoding='UTF-16')

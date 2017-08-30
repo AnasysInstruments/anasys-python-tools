@@ -59,20 +59,26 @@ class AnasysDoc(anasysfile.AnasysElement):
             bgdict[key] = new_bg
         return bgdict
 
-    def _write_backgrounds(self, *args):
-        return ET.Element("PH", text="WRITE CODE TO GO HERE")
-
-    def _write_rendered_spectra(self, elem, nom):
-        # return ET.Element(name, text="WRITE CODE TO GO HERE")
+    def _write_backgrounds(self, elem, nom, bgs):
         new_elem = ET.Element(nom)
-        for spectra in self.RenderedSpectra.values():
+        for bg in self.Backgrounds.values():
+            rr = bg._anasys_to_etree(bg, name="Background")
+            new_elem.append(rr)
+        elem.append(new_elem)
+
+    def _write_rendered_spectra(self, elem, nom, spectrums):
+        new_elem = ET.Element(nom)
+        for spectra in spectrums.values():
             rr = spectra._anasys_to_etree(spectra, name="IRRenderedSpectra")
             new_elem.append(rr)
         elem.append(new_elem)
-        # return ret_elem
 
-    def _write_height_maps(self, *args):
-        return ET.Element("PH", text="WRITE CODE TO GO HERE")
+    def _write_height_maps(self, elem, nom, heightmaps):
+        new_elem = ET.Element(nom)
+        for hm in heightmaps.values():
+            rr = hm._anasys_to_etree(hm, name="HeightMap")
+            new_elem.append(rr)
+        elem.append(new_elem)
 
     def _write_spectral_channel_views(self, *args):
         return ET.Element("PH", text="WRITE CODE TO GO HERE")

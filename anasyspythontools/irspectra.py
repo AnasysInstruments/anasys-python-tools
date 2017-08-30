@@ -50,8 +50,10 @@ class IRRenderedSpectra(anasysfile.AnasysElement):
             dcdict[key] = new_dc
         return dcdict
 
-    def _write_data_channels(self, *args, **kwargs):
-        pass
+    def _write_data_channels(self, elem, nom, datachannels):
+        for dc in datachannels.values():
+            new_elem = dc._anasys_to_etree(dc, name="DataChannels")
+            elem.append(new_elem)
 
     def _get_background(self):
         pass
@@ -72,7 +74,10 @@ class Background(anasysfile.AnasysElement):
         self._special_read = {'Table': self._serial_tags_to_nparray,
                               'AttenuatorPower': self._serial_tags_to_nparray}
         anasysfile.AnasysElement.__init__(self, etree=background)
-
+    #
+    # def _write_table(self, elem, nom, table):
+    #     print(self, elem, nom, table)
+    #     elem.append()
     # def _get_table(self, table): # 126
     #     table_data = []
     #     for double in table:

@@ -26,7 +26,7 @@ class AnasysDoc(anasysfile.AnasysElement):
         self._special_read = {'HeightMaps': self._read_height_maps,
                               'RenderedSpectra':self._read_rendered_spectra,
                               'Backgrounds': self._read_backgrounds,
-                              'SpectraChannelViews': {}}
+                              'SpectraChannelViews': self._read_spectral_channel_views}
         anasysfile.AnasysElement.__init__(self, etree=ftree)
 
     def _read_rendered_spectra(self, spectra):
@@ -48,6 +48,16 @@ class AnasysDoc(anasysfile.AnasysElement):
             key = self._check_key(key, mapdict)
             mapdict[key] = new_map
         return mapdict
+
+    def _read_spectral_channel_views(self, scvs):
+        """Takes an iterable of IRSpectraChannelViews, and returns a dict of IRSpectraChannelViews objects"""
+        newdict = {}
+        for item in scvs:
+            new_item = anasysfile.AnasysElement(etree=item)
+            key = item.find('Label').text
+            key = self._check_key(key, newdict)
+            newdict[key] = new_item
+        return newdict
 
     def _read_backgrounds(self, backgrounds):
         """Returns a list of the Background objects"""
@@ -80,5 +90,9 @@ class AnasysDoc(anasysfile.AnasysElement):
             new_elem.append(rr)
         elem.append(new_elem)
 
-    def _write_spectral_channel_views(self, *args):
-        return ET.Element("PH", text="WRITE CODE TO GO HERE")
+    def _write_spectral_channel_views(self, elem, nom, scvs):
+        new_elem = ET.Element(nom)
+        for item in scvs.values():
+            rr = item._anasys_to_etree(item, name="IRSpectraChannelView")
+            new_elem.append(rr)
+        elem.append(new_elem)

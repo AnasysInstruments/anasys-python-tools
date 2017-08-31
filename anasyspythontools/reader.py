@@ -18,7 +18,7 @@ def main():
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
     f = anasysio.read('./test/test data/PMMA spectra 1.axd')
     g = anasysio.read('./test/test data/TappingModeimage.axz')
-    # print(f.RenderedSpectra['Spectrum 1'].DataChannels)
+    print(dir(f.SpectraChannelViews['IR-Amplitude']))
     # print(f.RenderedSpectra.Backgrounds)
     # for bg in f.Backgrounds.values():
     #     print(len(bg.Table))

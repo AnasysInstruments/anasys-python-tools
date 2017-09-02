@@ -1,28 +1,68 @@
 import xml.etree.ElementTree as ET   #for parsing XML
-from xml.dom import minidom #Unfortunately required as ElementTree won't pretty format xml
-
-# def write(self, filename):
-#     """Writes the current object to file"""
-#     xml = self._anasys_to_etree(self, 'Document')
-#     with open(filename, 'wb') as f:
-#         xmlstr = minidom.parseString(ET.tostring(xml)).toprettyxml(indent="  ", encoding='UTF-16')
-#         f.write(xmlstr)
+import copy
 
 def _strip_namespace(elem):
     """strips annoying xmlns data that elementTree auto-prepends to all element tags"""
-    if elem.tail:
-        elem.tail = elem.tail.strip()
-    elem.tag = elem.tag.split('}', 1)[1]
     for child in elem:
         _strip_namespace(child)
+    elem.tag = elem.tag.split('}', 1)[1]
 
-def sort_el(elem):
-    # print(elem[:])
+def ptail(elem):
+    """Prints the tail of an element to teh console in human readable chars"""
+    newstr = "["
+    for char in elem.tail:
+        if char == " ":
+            newstr += "*"
+        elif char == "\n":
+            newstr += "N"
+        else:
+            newstr += "*"
+    return newstr + "]"
+
+def newsort(elem, indent=0):
+    """Recursively sorts all elements alphabetically. Heirarchy not affected"""
+    #Actually perform the sort
     elem[:] = sorted(elem, key=lambda x: x.tag)
-    # print(elem[:])
-    # print()
-    for child in elem: # Search for parent elements
-        sort_el(child)
+    #Now fix the element tails so printing looks nice
+    #ElementTree kinda sucks in that tails are set at conversion, not at write time
+    #Therefore, your printed indents will get screwed up if you sort elements.
+    for idx, child in enumerate(elem): # Search for parent elements
+        newsort(child, indent+1)
+        child.tail = "\n" + "  " * (indent + 1)
+        if idx == len(list(elem))-1:
+            child.tail = "\n" + "  " * indent
+
+def compare_elements(elem1, elem2):
+    """Compares two element tree elements, ignoring tails"""
+    diffs = {}
+    same = True
+    if elem1.tag != elem2.tag:
+        same = False
+    if elem1.text != elem2.text:
+        same = False
+    if list(elem1).sort() != list(elem2).sort():
+        same = False
+    return same
+
+
+    # if !issorted:
+    #     elem1= copy.deepcopy(elem1)
+    #     elem2= copy.deepcopy(elem2)
+    #     newsort(elem1)
+    #     newsort(elem2)
+
+def get_diffs(elem1, elem2, issorted=False):
+    if !issorted:
+        elem1= copy.deepcopy(elem1)
+        elem2= copy.deepcopy(elem2)
+        newsort(elem1)
+        newsort(elem2)
+    if compare_elements(elem1, elem2):
+        for child1, child2 in zip(elem1, elem2):
+            get_diffs(elem1, elem2, True)
+    else:
+
+
 
 _if = './test/test data/EmptyIRDoc2.axd'
 _of = './test/test data/EmptyIRDoc.axd'
@@ -37,23 +77,21 @@ etofroot = et_of.getroot()
 _strip_namespace(etifroot)
 _strip_namespace(etofroot)
 
-sort_el(etifroot)
-sort_el(etofroot)
-
-etifroot = minidom.parseString(ET.tostring(etifroot)).toprettyxml(indent="  ", encoding='UTF-16')
-etofroot = minidom.parseString(ET.tostring(etofroot)).toprettyxml(indent="  ", encoding='UTF-16')
-#
-# with open('./scratch/temp1.xml', 'wb') as f:
-#     f.write(etifroot)
-# with open('./scratch/temp2.xml', 'wb') as f:
-#     f.write(etofroot)
-with open('./scratch/temp3.xml', 'wb') as f:
-    etifroot.writexml(f)
-
-
-# etifroot = ET.fromstring(ET.tostring(etifroot))
-# etofroot = ET.fromstring(ET.tostring(etofroot))
-# print(ET.tostring(etifroot, method="xml"))
+newsort(etifroot)
+newsort(etofroot)
 
 et_if.write('./scratch/temp1.xml')
 et_of.write('./scratch/temp2.xml')
+def compare
+with open('./scratch/temp1.xml', 'r') as f1:
+    with open('./scratch/temp2.xml', 'r') as f2:
+        lineno = 1
+        for line in f1:
+            line1 = line.strip()
+            line2 = f2.readline().strip()
+            if line1 != line2:
+                print("Line {} Does not match".format(lineno))
+                print(line1, "\n", line2)
+                # break
+            lineno +=1
+        print("Files Match!")

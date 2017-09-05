@@ -19,6 +19,9 @@ def ptail(elem):
             newstr += "*"
     return newstr + "]"
 
+def get_child_tags(elem):
+    return [x.tag for x in list(elem)]
+
 def newsort(elem, indent=0):
     """Recursively sorts all elements alphabetically. Heirarchy not affected"""
     #Actually perform the sort
@@ -31,40 +34,52 @@ def newsort(elem, indent=0):
         child.tail = "\n" + "  " * (indent + 1)
         if idx == len(list(elem))-1:
             child.tail = "\n" + "  " * indent
+def print_uniques(list1, list2):
+    notin2 = []
+    notin1 = []
+    for i in list1:
+        if i in list2:
+            continue
+        notin2.append(i)
+    for i in list2:
+        if i in list1:
+            continue
+        notin1.append(i)
+    if notin1 != []:
+        print("Not in Element 1:", notin1)
+    if notin2 != []:
+        print("Not in Element 2:", notin2)
 
 def compare_elements(elem1, elem2):
     """Compares two element tree elements, ignoring tails"""
     diffs = {}
     same = True
+    list1 = get_child_tags(elem1)
+    list2 = get_child_tags(elem2)
     if elem1.tag != elem2.tag:
         same = False
     if elem1.text != elem2.text:
         same = False
-    if list(elem1).sort() != list(elem2).sort():
+    if list1 != list2:
         same = False
+        print_uniques(list1, list2)
     return same
 
-
-    # if !issorted:
-    #     elem1= copy.deepcopy(elem1)
-    #     elem2= copy.deepcopy(elem2)
-    #     newsort(elem1)
-    #     newsort(elem2)
-
-def get_diffs(elem1, elem2, issorted=False):
-    if !issorted:
+def get_diffs(elem1, elem2, _sorted=False):
+    if not _sorted:
         elem1= copy.deepcopy(elem1)
         elem2= copy.deepcopy(elem2)
         newsort(elem1)
         newsort(elem2)
     if compare_elements(elem1, elem2):
-        for child1, child2 in zip(elem1, elem2):
-            get_diffs(elem1, elem2, True)
+        for child1, child2 in zip(list(elem1), list(elem2)):
+            get_diffs(child1, child2, True)
     else:
+        print("[", elem1.tag, ",", elem2.tag, "] Do Not Match")
 
 
-
-_if = './test/test data/EmptyIRDoc2.axd'
+# _if = './test/test data/EmptyIRDoc2.axd'
+_if = './test/test data/EmptySweepDoc.axd'
 _of = './test/test data/EmptyIRDoc.axd'
 results = './scratch/diff.txt'
 
@@ -82,16 +97,18 @@ newsort(etofroot)
 
 et_if.write('./scratch/temp1.xml')
 et_of.write('./scratch/temp2.xml')
-def compare
-with open('./scratch/temp1.xml', 'r') as f1:
-    with open('./scratch/temp2.xml', 'r') as f2:
-        lineno = 1
-        for line in f1:
-            line1 = line.strip()
-            line2 = f2.readline().strip()
-            if line1 != line2:
-                print("Line {} Does not match".format(lineno))
-                print(line1, "\n", line2)
-                # break
-            lineno +=1
-        print("Files Match!")
+
+get_diffs(etifroot, etofroot)
+#
+# with open('./scratch/temp1.xml', 'r') as f1:
+#     with open('./scratch/temp2.xml', 'r') as f2:
+#         lineno = 1
+#         for line in f1:
+#             line1 = line.strip()
+#             line2 = f2.readline().strip()
+#             if line1 != line2:
+#                 print("Line {} Does not match".format(lineno))
+#                 print(line1, "\n", line2)
+#                 # break
+#             lineno +=1
+#         print("Files Match!")

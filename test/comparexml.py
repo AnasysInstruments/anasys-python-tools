@@ -34,6 +34,7 @@ def newsort(elem, indent=0):
         child.tail = "\n" + "  " * (indent + 1)
         if idx == len(list(elem))-1:
             child.tail = "\n" + "  " * indent
+
 def print_uniques(list1, list2):
     notin2 = []
     notin1 = []

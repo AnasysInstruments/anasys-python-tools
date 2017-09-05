@@ -7,8 +7,8 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 
-import anasysdoc
-# from . import anasysdoc
+# import anasysdoc
+from . import anasysdoc
 import xml.etree.ElementTree as ET   #for parsing XML
 import gzip                          #for unzipping .axz files
 import os

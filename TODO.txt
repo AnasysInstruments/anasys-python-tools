@@ -38,3 +38,10 @@ Make _parent tags work.
 #BUGS
 <Document xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="1.0" DocType="IR" xmlns="www.anasysinstruments.com">
 xmlns tags are being turned into objects. oops, fixit
+
+#REQ FOR RELEASE
+-Read in everything from an IR Document
+-Documentation on ReadtheDocs
+-Move to Anasys repo
+-Modularizing
+-PyPI upload

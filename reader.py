@@ -7,17 +7,18 @@
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
 import numpy as np
-import anasysio
-import anasysfile
-import irspectra
+# import anasysio
+# import anasysfile
+# import irspectra
+import anasyspythontools as anasys
 from matplotlib import pyplot as plt
 import xml.etree.ElementTree as ET
 
 
 def main():
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
-    f = anasysio.read('./test/test data/PMMA spectra 1.axd')
-    g = anasysio.read('./test/test data/TappingModeimage.axz')
+    f = anasys.read('./tests/test data/PMMA spectra 1.axd')
+    g = anasys.read('./tests/test data/TappingModeimage.axz')
     print(dir(f.SpectraChannelViews['IR-Amplitude']))
     # print(f.RenderedSpectra.Backgrounds)
     # for bg in f.Backgrounds.values():

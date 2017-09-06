@@ -1,6 +1,0 @@
-{
-  "anasyspythontools/test/test_file_conversion.py": true,
-  "anasyspythontools/test/test_something.py": true,
-  "test/test_file_conversion.py": true,
-  "test/test_something.py::TestClass::()": true
-}

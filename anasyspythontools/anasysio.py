@@ -65,6 +65,6 @@ class AnasysFileReader():
             f_data = self._strip_namespace(f_data)
         return f_data
 
-def read(fn):
-    doc = AnasysFileReader(fn)._doc
-    return anasysdoc.AnasysDoc(doc)
+# def read(fn):
+#     doc = AnasysFileReader(fn)._doc
+#     return anasysdoc.AnasysDoc(doc)

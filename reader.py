@@ -18,8 +18,10 @@ import xml.etree.ElementTree as ET
 def main():
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
     f = anasys.read('./tests/test data/PMMA spectra 1.axd')
-    g = anasys.read('./tests/test data/TappingModeimage.axz')
-    print(dir(f.SpectraChannelViews['IR-Amplitude']))
+    # g = anasys.read('./tests/test data/TappingModeimage.axz')
+    # print(dir(f.SpectraChannelViews['IR-Amplitude']))
+    # print(dir(f.RenderedSpectra['Spectrum 1'].FreqWindowMaps[0]))
+    # print(dir(f.AFMUIChannels))
     # print(f.RenderedSpectra.Backgrounds)
     # for bg in f.Backgrounds.values():
     #     print(len(bg.Table))

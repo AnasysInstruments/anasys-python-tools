@@ -23,16 +23,20 @@ class IRRenderedSpectra(anasysfile.AnasysElement):
     def __init__(self, irrenderedspectra):
         # self._parent = parent #parent object (Document)
         self._special_write = {'DataChannels': self._write_data_channels,
-                               'FreqWindowMap': self._write_freq_window_maps}
+                               'FreqWindowMaps': self._write_freq_window_maps}
         self._special_read = {'DataChannels': self._get_data_channels,
-                               'FreqWindowMap': self._read_freq_window_maps}
+                               'FreqWindowMaps': self._read_freq_window_maps}
         self._skip_on_write = ['Background'] #objects to skip when writing back to xml
-        # a=irrenderedspectra
         self._wrangle_data_channels(irrenderedspectra)
-        # b=irrenderedspectra
-        # print(a==b)
+        self._wrangle_freqwindowmaps(irrenderedspectra)
         anasysfile.AnasysElement.__init__(self, etree=irrenderedspectra)
-        self.Background = self._get_background() #get bg associated with this spectra
+        # self.Background = self._get_background() #get bg associated with this spectra
+
+    def _wrangle_freqwindowmaps(self, irrenderedspectra):
+        new_fwm = ET.SubElement(irrenderedspectra, 'FreqWindowMaps')
+        for fwm in irrenderedspectra.findall('FreqWindowMap'):
+            new_fwm.append(fwm)
+            irrenderedspectra.remove(fwm)
 
     def _wrangle_data_channels(self, irrenderedspectra):
         new_datachannels = ET.SubElement(irrenderedspectra, 'temp_DataChannels')
@@ -43,7 +47,7 @@ class IRRenderedSpectra(anasysfile.AnasysElement):
         new_datachannels.tag = 'DataChannels'
 
     def _get_data_channels(self, datachannels):
-        """Returns a list of the DataChannel objects"""
+        """Returns a dict of the DataChannel objects"""
         dcdict = {}
         for dc in datachannels:
             new_dc = DataChannel(dc)
@@ -52,10 +56,18 @@ class IRRenderedSpectra(anasysfile.AnasysElement):
             dcdict[key] = new_dc
         return dcdict
 
-    def _read_freq_window_maps(self, *args, **kwargs):
-        pass
-    def _write_freq_window_maps(self, *args, **kwargs):
-        pass
+    def _read_freq_window_maps(self, freqwindowmaps):
+        """Returns a list of FreqWindowMap's"""
+        fwmlist = []
+        for fwm in freqwindowmaps:
+            new_fwm = anasysfile.AnasysElement(etree=fwm)
+            fwmlist.append(new_fwm)
+        return fwmlist
+
+    def _write_freq_window_maps(self, elem, nom, freqwindowmaps):
+        for fwm in freqwindowmaps:
+            new_elem = fwm._anasys_to_etree(fwm, name='FreqWindowMap')
+            elem.append(new_elem)
 
     def _write_data_channels(self, elem, nom, datachannels):
         for dc in datachannels.values():

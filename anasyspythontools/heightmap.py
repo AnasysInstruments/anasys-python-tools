@@ -121,6 +121,3 @@ class HeightMap(anasysfile.AnasysElement):
             return
         #If they made it this far, save (fname given)
         plt.savefig(fname, **kwargs)
-
-
-#TODO Need to write self back into etree

@@ -22,12 +22,27 @@ class AnasysDoc(anasysfile.AnasysElement):
         self._special_write = {'Backgrounds': self._write_backgrounds,
                                'HeightMaps': self._write_height_maps,
                                'RenderedSpectra':self._write_rendered_spectra,
-                               'SpectraChannelViews': self._write_spectral_channel_views}
+                               'SpectraChannelViews': self._write_spectral_channel_views,
+                               'AFMUIChannels': self._write_afm_ui_channels}
         self._special_read = {'HeightMaps': self._read_height_maps,
                               'RenderedSpectra':self._read_rendered_spectra,
                               'Backgrounds': self._read_backgrounds,
-                              'SpectraChannelViews': self._read_spectral_channel_views}
+                              'SpectraChannelViews': self._read_spectral_channel_views,
+                              'AFMUIChannels': self._read_afm_ui_channels}
+        self._wrangle_afm_ui_channels(ftree)
         anasysfile.AnasysElement.__init__(self, etree=ftree)
+
+    def _wrangle_afm_ui_channels(self, ftree):
+        for typo in ftree.findall('AFMUIhannels'):
+            typo.tag = 'AFMUIChannels'
+
+    def _read_afm_ui_channels(self, afmuics):
+        """Takes an iterable of AFMUIhannels (note the typo), and returns a list of them"""
+        chanlist = []
+        for chan in afmuics:
+            ch = anasysfile.AnasysElement(etree=chan)
+            chanlist.append(ch)
+        return chanlist
 
     def _read_rendered_spectra(self, spectra):
         spectradict = {}
@@ -42,7 +57,6 @@ class AnasysDoc(anasysfile.AnasysElement):
         """Takes an iterable of Height Maps, and returns a dict of HeightMap objects"""
         mapdict = {}
         for _map in maps:
-            # self._attr_to_children(_map)
             new_map = heightmap.HeightMap(_map)
             key = new_map.Label
             key = self._check_key(key, mapdict)
@@ -96,3 +110,10 @@ class AnasysDoc(anasysfile.AnasysElement):
             rr = item._anasys_to_etree(item, name="IRSpectraChannelView")
             new_elem.append(rr)
         elem.append(new_elem)
+
+    def _write_afm_ui_channels(self, elem, nom, afmuics):
+        # print(elem.tag, nom, afmuics, self)
+        hannels = ET.SubElement(elem, "AFMUIhannels")
+        for chan in afmuics:
+            new_elem = chan._anasys_to_etree(chan, name='AFMUIChannel')
+            hannels.append(new_elem)

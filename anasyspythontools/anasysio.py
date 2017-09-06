@@ -44,11 +44,12 @@ class AnasysFileReader():
             f_xml = self._open_axz(self._f_path)
         elif ext == '.axd':
             f_xml = self._open_axd(self._f_path)
+        print(f_xml.root.items())
         return f_xml.root
 
     def _strip_namespace(self, f_data):
         """strips annoying xmlns data that elementTree auto-prepends to all element tags"""
-        for _, el in f_data:
+        for event, el in f_data:
             el.tag = el.tag.split('}', 1)[1] #strip namespaces from tags
         return f_data
 

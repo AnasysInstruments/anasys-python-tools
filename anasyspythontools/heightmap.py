@@ -22,31 +22,35 @@ class HeightMap(anasysfile.AnasysElement):
 
     def __init__(self, heightmap):
         # self._parent = parent
-        self._special_write = {}
-        self._skip_on_write = ['Tags']
-        self._special_read = {'Tags': self._handle_tags}
+        self._special_write = {'Tags': self._write_tags}
+        self._skip_on_write = []
+        self._special_read = {'Tags': self._read_tags}
         anasysfile.AnasysElement.__init__(self, etree=heightmap)
         #Rearrange data into correct array size
         self.SampleBase64 = self.SampleBase64.reshape(int(self.Resolution.X), int(self.Resolution.Y))
 
-    def _handle_tags(self, element):
+    def _write_tags(self, elem, nom, tags):
+        new_elem = ET.SubElement(elem, nom)
+        for k, v in tags.items():
+            tag = ET.SubElement(new_elem, "Tag")
+            tag.set("Name", k)
+            tag.set("Value", v)
+
+    def _read_tags(self, element):
         """Turn tags into a dict of dicts"""
         tag_dict = {}
-        # for tag in list(element):
-        #     self._attr_to_children(tag)
-        #     tag_dict[tag.find('Name').text] = tag.find('Value').text
         for tag in list(element):
             tag_dict[tag.get('Name')] = tag.get('Value')
         return tag_dict
 
-    def _tags_to_etree(self, tags_obj):
-        """Converts tags back to xml"""
-        root = ET.Element("Tags")
-        for k, v in tags_obj:
-            sub = ET.SubElement(root, "Tag")
-            sub.set("Name", k)
-            sub.set("Value", v)
-        return root
+    # def _tags_to_etree(self, tags_obj):
+    #     """Converts tags back to xml"""
+    #     root = ET.Element("Tags")
+    #     for k, v in tags_obj:
+    #         sub = ET.SubElement(root, "Tag")
+    #         sub.set("Name", k)
+    #         sub.set("Value", v)
+    #     return root
 
     def _plot(self, **kwargs):
         """Generates a pyplot image of height map for saving or viewing"""

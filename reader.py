@@ -31,9 +31,9 @@ def main():
     # print(type(g.HeightMaps['Height 1'].Tags)==type({}))
     # for i in f:
     #     print(i, type(i))
-    f.write("./scratch/test_output.xml")
+    f.write("./scratch/test_output.axd")
     # print(g.HeightMaps['Height 1'].Tags)
-    g.write("./scratch/test_output2.xml")
+    g.write("./scratch/test_output2.axd")
     # print(f.SpectraChannelViews)
     # print(object.__dir__(f))
     # print(object.__dir__(g))

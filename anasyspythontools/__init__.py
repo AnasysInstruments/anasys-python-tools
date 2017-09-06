@@ -5,5 +5,5 @@ from . import irspectra
 from . import anasysio
 
 def read(fn):
-    doc = anasysio.AnasysFileReader(fn).doc
+    doc = anasysio.AnasysFileReader(fn)._doc
     return anasysdoc.AnasysDoc(doc)

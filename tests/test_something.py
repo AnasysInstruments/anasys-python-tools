@@ -3,7 +3,7 @@
 
 import anasyspythontools as anasys
 import pytest
-import anasysfile
+from anasyspythontools import anasysfile
 
 class TestClass(object):
     def test_that_tests_are_working(self):
@@ -15,12 +15,13 @@ class TestClass(object):
         testkeys = ['1 (1)', '1 (2)', '1', '1 (2) 1', '3', '3 (2)']
         goalkeys = ['1 (3)', '1 (3)', '1 (3)', '1 (2) 1 (1)', '3 (1)', '3 (2)']
         outkeys = []
+        testobj = anasysfile.AnasysElement()
         for i in range(len(testkeys)):
-            outkeys.append(anasysfile.AnasysFile._check_key(testkeys[i], testdict))
-        assert testkeys == goalkeys
+            outkeys.append(testobj._check_key(testkeys[i], testdict))
+        assert outkeys == goalkeys
 
-    def axz_same_as_axd(self):
-        assert anasys.read('test data/EmptyIRDoc.axd') == anasys.read('test data/EmptyIRDoc.axz')
+    # def test_axz_same_as_axd(self):
+    #     assert anasys.read('test data/EmptyIRDoc.axd') == anasys.read('test data/EmptyIRDoc.axz')
 
 
 #

@@ -191,7 +191,7 @@ class AnasysElement(object):
         return np_array
 
     def _nparray_to_serial_tags(self, elem, nom, np_array):
-        """Takes a numpy array returns an etree object and of consecutive <double>flaot</double> tags"""
+        """Takes a numpy array returns an etree object and of consecutive <double>float</double> tags"""
         root = ET.Element(nom)
         flat = np_array.flatten()
         for x in flat:

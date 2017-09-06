@@ -45,3 +45,7 @@ xmlns tags are being turned into objects. oops, fixit
 -Move to Anasys repo
 -Modularizing
 -PyPI upload
+
+
+REALLY IMPORTANT:
+-original xml file should not be operated on in any way. make a copy first.

@@ -17,6 +17,7 @@ class AnasysFileReader():
     """A class for reading Anasys file data"""
     def __init__(self, f_name):
         self._f_types = ['.axd', '.axz', '.irb']
+        # ET.register_namespace('xsd', "http://www.w3.org/2001/XMLSchema")
         self._doc = self._get_etree(f_name)
 
     def _get_extension(self, _f_path):

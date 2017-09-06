@@ -202,6 +202,10 @@ class AnasysElement(object):
     def write(self, filename):
         """Writes the current object to file"""
         xml = self._anasys_to_etree(self, 'Document')
+        #ElementTree annoyingly only remembers namespaces that are used so next line is necessary
+        xml.set("xmlns", "www.anasysinstruments.com")
+        #Can't see any reason to add unused namespaces other than default, as Analysis Studio won't complain,
+        #but minidom will if one is duplicated (can't easily get around this lame default behavior in etree)
         with open(filename, 'wb') as f:
             xmlstr = minidom.parseString(ET.tostring(xml)).toprettyxml(indent="  ", encoding='UTF-16')
             f.write(xmlstr)

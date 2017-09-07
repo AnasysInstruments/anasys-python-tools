@@ -101,7 +101,6 @@ class AnasysElement(object):
                 rr = self._anasys_to_etree(v, k)
                 #Create subelement k, with a value determined by recursion
                 elem.append(rr)
-        # print("returned elem", elem)
         return elem
 
     def _attr_to_children(self, et_elem):

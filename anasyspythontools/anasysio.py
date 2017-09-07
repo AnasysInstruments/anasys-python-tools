@@ -45,7 +45,6 @@ class AnasysFileReader():
             f_xml = self._open_axz(self._f_path)
         elif ext == '.axd':
             f_xml = self._open_axd(self._f_path)
-        print(f_xml.root.items())
         return f_xml.root
 
     def _strip_namespace(self, f_data):

@@ -67,6 +67,10 @@ class TestClass(object):
         failures = []
         files = get_anasys_files_in_test_data_folder()
         for f in files:
+            #You can comment or uncomment this if statement to create an axd from an axz for easy inspection
+            if os.path.basename(f) == 'SThM Noise.axz':
+                anasys.read(f).write( '../scratch/IMTHEONEYOUWANT.axd')
+
             line_count_1 = get_line_count(open_file(f))
             temp = anasys.read(f)
             temp.write('../scratch/tempfile.axd')

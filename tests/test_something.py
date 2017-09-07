@@ -6,6 +6,9 @@ import pytest
 from anasyspythontools import anasysfile
 import os
 import gzip
+import xml.etree.ElementTree as ET   #for parsing XML
+import copy
+from xml.dom import minidom #Unfortunately required as ElementTree won't pretty format xml
 
 def get_anasys_files_in_test_data_folder():
     anasys_exts = ['.axd', '.axz']
@@ -68,8 +71,16 @@ class TestClass(object):
         files = get_anasys_files_in_test_data_folder()
         for f in files:
             #You can comment or uncomment this if statement to create an axd from an axz for easy inspection
+            #Make comparing ET output of file and anasys.read().write() its own test
             if os.path.basename(f) == 'SThM Noise.axz':
-                anasys.read(f).write( '../scratch/IMTHEONEYOUWANT.axd')
+                # anasys.read(f).write('../scratch/IMTHEONEYOUWANT.axd')
+                content1 = ET.fromstring(open_file(f))
+                with open('../scratch/IMTHEONEYOUWANT.axd', 'wb') as g:
+                    xmlstr = minidom.parseString(ET.tostring(content1)).toprettyxml(indent="  ", encoding='UTF-16')
+                    g.write(xmlstr)
+                content2 = ET.parse('../scratch/test_output2.xml').getroot()
+                get_diffs(content1, content2)
+
 
             line_count_1 = get_line_count(open_file(f))
             temp = anasys.read(f)
@@ -86,83 +97,83 @@ class TestClass(object):
 # _______ comapring XML Stuff ___________
 # import xml.etree.ElementTree as ET   #for parsing XML
 # import copy
-#
-# def _strip_namespace(elem):
-#     """strips annoying xmlns data that elementTree auto-prepends to all element tags"""
-#     for child in elem:
-#         _strip_namespace(child)
-#     elem.tag = elem.tag.split('}', 1)[1]
-#
-# def ptail(elem):
-#     """Prints the tail of an element to the console in human readable chars"""
-#     newstr = "["
-#     for char in elem.tail:
-#         if char == " ":
-#             newstr += "*"
-#         elif char == "\n":
-#             newstr += "N"
-#         else:
-#             newstr += "*"
-#     return newstr + "]"
-#
-# def get_child_tags(elem):
-#     return [x.tag for x in list(elem)]
-#
-# def newsort(elem, indent=0):
-#     """Recursively sorts all elements alphabetically. Heirarchy not affected"""
-#     #Actually perform the sort
-#     elem[:] = sorted(elem, key=lambda x: x.tag)
-#     #Now fix the element tails so printing looks nice
-#     #ElementTree kinda sucks in that tails are set at conversion, not at write time
-#     #Therefore, your printed indents will get screwed up if you sort elements.
-#     for idx, child in enumerate(elem): # Search for parent elements
-#         newsort(child, indent+1)
-#         child.tail = "\n" + "  " * (indent + 1)
-#         if idx == len(list(elem))-1:
-#             child.tail = "\n" + "  " * indent
-#
-# def print_uniques(list1, list2):
-#     notin2 = []
-#     notin1 = []
-#     for i in list1:
-#         if i in list2:
-#             continue
-#         notin2.append(i)
-#     for i in list2:
-#         if i in list1:
-#             continue
-#         notin1.append(i)
-#     if notin1 != []:
-#         print("Not in Element 1:", notin1)
-#     if notin2 != []:
-#         print("Not in Element 2:", notin2)
-#
-# def compare_elements(elem1, elem2):
-#     """Compares two element tree elements, ignoring tails"""
-#     diffs = {}
-#     same = True
-#     list1 = get_child_tags(elem1)
-#     list2 = get_child_tags(elem2)
-#     if elem1.tag != elem2.tag:
-#         same = False
-#     if elem1.text != elem2.text:
-#         same = False
-#     if list1 != list2:
-#         same = False
-#         print_uniques(list1, list2)
-#     return same
-#
-# def get_diffs(elem1, elem2, _sorted=False):
-#     if not _sorted:
-#         elem1= copy.deepcopy(elem1)
-#         elem2= copy.deepcopy(elem2)
-#         newsort(elem1)
-#         newsort(elem2)
-#     if compare_elements(elem1, elem2):
-#         for child1, child2 in zip(list(elem1), list(elem2)):
-#             get_diffs(child1, child2, True)
-#     else:
-#         print("[", elem1.tag, ",", elem2.tag, "] Do Not Match")
+
+def _strip_namespace(elem):
+    """strips annoying xmlns data that elementTree auto-prepends to all element tags"""
+    for child in elem:
+        _strip_namespace(child)
+    elem.tag = elem.tag.split('}', 1)[1]
+
+def ptail(elem):
+    """Prints the tail of an element to the console in human readable chars"""
+    newstr = "["
+    for char in elem.tail:
+        if char == " ":
+            newstr += "*"
+        elif char == "\n":
+            newstr += "N"
+        else:
+            newstr += "*"
+    return newstr + "]"
+
+def get_child_tags(elem):
+    return [x.tag for x in list(elem)]
+
+def newsort(elem, indent=0):
+    """Recursively sorts all elements alphabetically. Heirarchy not affected"""
+    #Actually perform the sort
+    elem[:] = sorted(elem, key=lambda x: x.tag)
+    #Now fix the element tails so printing looks nice
+    #ElementTree kinda sucks in that tails are set at conversion, not at write time
+    #Therefore, your printed indents will get screwed up if you sort elements.
+    for idx, child in enumerate(elem): # Search for parent elements
+        newsort(child, indent+1)
+        child.tail = "\n" + "  " * (indent + 1)
+        if idx == len(list(elem))-1:
+            child.tail = "\n" + "  " * indent
+
+def print_uniques(list1, list2):
+    notin2 = []
+    notin1 = []
+    for i in list1:
+        if i in list2:
+            continue
+        notin2.append(i)
+    for i in list2:
+        if i in list1:
+            continue
+        notin1.append(i)
+    if notin1 != []:
+        print("Not in Element 1:", notin1)
+    if notin2 != []:
+        print("Not in Element 2:", notin2)
+
+def compare_elements(elem1, elem2):
+    """Compares two element tree elements, ignoring tails"""
+    diffs = {}
+    same = True
+    list1 = get_child_tags(elem1)
+    list2 = get_child_tags(elem2)
+    if elem1.tag != elem2.tag:
+        same = False
+    if elem1.text != elem2.text:
+        same = False
+    if list1 != list2:
+        same = False
+        print_uniques(list1, list2)
+    return same
+
+def get_diffs(elem1, elem2, _sorted=False):
+    if not _sorted:
+        elem1= copy.deepcopy(elem1)
+        elem2= copy.deepcopy(elem2)
+        newsort(elem1)
+        newsort(elem2)
+    if compare_elements(elem1, elem2):
+        for child1, child2 in zip(list(elem1), list(elem2)):
+            get_diffs(child1, child2, True)
+    else:
+        print("[", elem1.tag, ",", elem2.tag, "] Do Not Match")
 #
 #
 # # _if = './test/test data/EmptyIRDoc2.axd'

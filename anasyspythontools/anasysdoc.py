@@ -11,6 +11,7 @@ import xml.etree.ElementTree as ET
 from . import anasysfile
 from . import heightmap
 from . import irspectra
+from . import anasysnanoTA
 # import anasysfile
 # import heightmap
 # import irspectra
@@ -24,19 +25,41 @@ class AnasysDoc(anasysfile.AnasysElement):
                                'RenderedSpectra':self._write_rendered_spectra,
                                'SpectraChannelViews': self._write_spectral_channel_views,
                                'AFMUIChannels': self._write_afm_ui_channels,
-                               'AFMChannelViews': self._write_afm_channel_views}
+                               'AFMChannelViews': self._write_afm_channel_views,
+                               'Groups': self._write_nanoTA_groups,
+                               'AFMSettings': self._write_afm_settings}
         self._special_read = {'HeightMaps': self._read_height_maps,
                               'RenderedSpectra':self._read_rendered_spectra,
                               'Backgrounds': self._read_backgrounds,
                               'SpectraChannelViews': self._read_spectral_channel_views,
                               'AFMUIChannels': self._read_afm_ui_channels,
-                              'AFMChannelViews': self._read_afm_channel_views}
+                              'AFMChannelViews': self._read_afm_channel_views,
+                              'Groups': self._read_nanoTA_groups,
+                              'AFMSettings': self._read_afm_settings}
         self._wrangle_afm_ui_channels(ftree)
         anasysfile.AnasysElement.__init__(self, etree=ftree)
 
     def _wrangle_afm_ui_channels(self, ftree):
         for typo in ftree.findall('AFMUIhannels'):
             typo.tag = 'AFMUIChannels'
+
+    def _read_afm_settings(self, afmsettings):
+        settings = {}
+        for setting in afmsettings:
+            new_set = anasysfile.AnasysElement(etree=setting)
+            key = new_set.ID
+            key = self._check_key(key, settings)
+            settings[key] = new_set
+        return settings
+
+    def _read_nanoTA_groups(self, groups):
+        groupdict = {}
+        for group in groups:
+            gr = anasysnanoTA.Group(group)
+            key = gr.Name
+            key = self._check_key(key, groupdict)
+            groupdict[key] = gr
+        return groupdict
 
     def _read_afm_ui_channels(self, afmuics):
         """Takes an iterable of AFMUIhannels (note the typo), and returns a list of them"""
@@ -128,8 +151,20 @@ class AnasysDoc(anasysfile.AnasysElement):
             new_elem = chan._anasys_to_etree(chan, name='AFMUIChannel')
             hannels.append(new_elem)
 
-    def _write_afm_channel_views(self, elem, nom, afmuics):
+    def _write_afm_channel_views(self, elem, nom, afmchvs):
         channels = ET.SubElement(elem, nom)
-        for chan in afmuics.values():
+        for chan in afmchvs.values():
             new_elem = chan._anasys_to_etree(chan, name='AFMChannelView')
             channels.append(new_elem)
+
+    def _write_nanoTA_groups(self, elem, nom, groups):
+        grops = ET.SubElement(elem, nom)
+        for group in groups.values():
+            new_elem = group._anasys_to_etree(group, name="Group")
+            grops.append(new_elem)
+
+    def _write_afm_settings(self, elem, nom, afmsettings):
+        parent_elem = ET.SubElement(elem, nom)
+        for setting in afmsettings.values():
+            new_elem = setting._anasys_to_etree(setting, name="AXDNanoTAAFMSettings")
+            parent_elem.append(new_elem)

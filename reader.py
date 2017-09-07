@@ -27,28 +27,31 @@ def countlines(f):
 
 
 def main():
-    files = [f for f in os.listdir('./tests/test data/')]
-    exes = ['.axd']
-    for f in files:
-        fn, ext = os.path.splitext(f)
-        if ext in exes:
-            # try:
-                fpath = './tests/test data/'+ f
-                lines = countlines(fpath)
-                x = anasys.read(fpath)
-                x.write("./scratch/test_output_5.axd")
-                lines2 = countlines("./scratch/test_output_5.axd")
-                pas = False
-                if lines == lines2:
-                    pas = True
-                if pas:
-                    print('PASS:', f)
-                else:
-                    print('FAIL: {} Lines in {}, converted output contains {} lines'.format(lines, f, lines2))
-            # except:
-            #     print("Something bad happened in file:", f)
+    # files = [f for f in os.listdir('./tests/test data/')]
+    # exes = ['.axd']
+    # for f in files:
+    #     fn, ext = os.path.splitext(f)
+    #     if ext in exes:
+    #         try:
+    #             fpath = './tests/test data/'+ f
+    #             lines = countlines(fpath)
+    #             x = anasys.read(fpath)
+    #             x.write("./scratch/test_output_5.axd")
+    #             lines2 = countlines("./scratch/test_output_5.axd")
+    #             pas = False
+    #             if lines == lines2:
+    #                 pas = True
+    #             if pas:
+    #                 print('PASS:', f)
+    #             else:
+    #                 print('FAIL: {} Lines in {}, converted output contains {} lines'.format(lines, f, lines2))
+    #         except:
+    #             print("Something bad happened in file:", f)
 
-    #
+    f = anasys.read('./tests/test data/nanoTA in R Feedback.axd')
+    g = anasys.read('./tests/test data/SThM Noise.axd')
+    f.write("./scratch/test_output.xml")
+    g.write("./scratch/test_output2.xml")
     # with open('./tests/test data/EmptyNanoTADoc.axd', mode='r', encoding='UTF-16') as f:
     #     lines = f.readlines()
     #     for idx, i in enumerate(lines):
@@ -61,7 +64,6 @@ def main():
 
 
     # f = anasysdoc.read('./test/test data/Z Noise Cover Off.axz')
-    f = anasys.read('./tests/test data/EmptyNanoTADoc.axd')
 
     # f = anasys.read('./tests/test data/PMMA spectra 1.axd')
     # g = anasys.read('./tests/test data/TappingModeimage.axd')
@@ -80,7 +82,6 @@ def main():
     # print(type(g.HeightMaps['Height 1'].Tags)==type({}))
     # for i in f:
     #     print(i, type(i))
-    f.write("./scratch/test_output.axd")
     # print(g.HeightMaps['Height 1'].Tags)
     # g.write("./scratch/test_output2.axd")
     # print(f.SpectraChannelViews)

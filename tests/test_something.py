@@ -4,6 +4,49 @@
 import anasyspythontools as anasys
 import pytest
 from anasyspythontools import anasysfile
+import os
+import gzip
+
+def get_anasys_files_in_test_data_folder():
+    anasys_exts = ['.axd', '.axz']
+    all_files = [f for f in os.listdir('./test data/')]
+    return_files = []
+    for f in all_files:
+        if os.path.splitext(f)[1] in anasys_exts:
+            fpath = './test data/'+ f
+            return_files.append(fpath)
+    return return_files
+
+def get_line_count(xmlstr):
+    lines = xmlstr.split("\n")
+    #pop the last line if it's a newline char
+    if lines[-1] == '\n':
+        lines.pop()
+    if lines[-1] == b'\x00':
+        lines.pop()
+    if lines[-1] == '':
+        lines.pop()
+    # print(lines[-3:])
+    line_count = len(lines)
+    return line_count
+
+def open_file(f):
+    if os.path.splitext(f)[1] == '.axz':
+        return get_axz_content(f)
+    else:
+        return get_axd_content(f)
+
+def get_axz_content(fname):
+    """returns a string of everything"""
+    with gzip.open(fname, mode='rb') as f:
+        content = f.read().decode('UTF-16')
+    return content
+
+def get_axd_content(fname, mode='r', encoding='UTF-16'):
+    """returns a string of everything"""
+    with open(fname, 'rb') as f:
+        content = f.read()
+    return content.decode('UTF-16')
 
 class TestClass(object):
     def test_that_tests_are_working(self):
@@ -20,6 +63,17 @@ class TestClass(object):
             outkeys.append(testobj._check_key(testkeys[i], testdict))
         assert outkeys == goalkeys
 
+    def test_file_lengths_after_reading_and_writing_back_to_axd(self):
+        failures = []
+        files = get_anasys_files_in_test_data_folder()
+        for f in files:
+            line_count_1 = get_line_count(open_file(f))
+            temp = anasys.read(f)
+            temp.write('../scratch/tempfile.axd')
+            line_count_2 = get_line_count(open_file('../scratch/tempfile.axd'))
+            if line_count_1 != line_count_2:
+                failures.append('FAIL: {} (input lines: {}, output lines: {})'.format(f, line_count_1, line_count_2))
+        assert failures == []
     # def test_axz_same_as_axd(self):
     #     assert anasys.read('test data/EmptyIRDoc.axd') == anasys.read('test data/EmptyIRDoc.axz')
 

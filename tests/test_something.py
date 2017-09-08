@@ -70,25 +70,16 @@ class TestClass(object):
         failures = []
         files = get_anasys_files_in_test_data_folder()
         for f in files:
-            #You can comment or uncomment this if statement to create an axd from an axz for easy inspection
-            #Make comparing ET output of file and anasys.read().write() its own test
-            if os.path.basename(f) == 'SThM Noise.axz':
-                # anasys.read(f).write('../scratch/IMTHEONEYOUWANT.axd')
-                content1 = ET.fromstring(open_file(f))
-                with open('../scratch/IMTHEONEYOUWANT.axd', 'wb') as g:
-                    xmlstr = minidom.parseString(ET.tostring(content1)).toprettyxml(indent="  ", encoding='UTF-16')
-                    g.write(xmlstr)
-                content2 = ET.parse('../scratch/test_output2.xml').getroot()
-                get_diffs(content1, content2)
-
-
             line_count_1 = get_line_count(open_file(f))
             temp = anasys.read(f)
-            temp.write('../scratch/tempfile.axd')
-            line_count_2 = get_line_count(open_file('../scratch/tempfile.axd'))
+            temppath = '../scratch/test_' + os.path.basename(f)[:-3] + 'axd'
+            temp.write(temppath)
+            # make output individual files
+            line_count_2 = get_line_count(open_file(temppath))
             if line_count_1 != line_count_2:
                 failures.append('FAIL: {} (input lines: {}, output lines: {})'.format(f, line_count_1, line_count_2))
         assert failures == []
+
     # def test_axz_same_as_axd(self):
     #     assert anasys.read('test data/EmptyIRDoc.axd') == anasys.read('test data/EmptyIRDoc.axz')
 

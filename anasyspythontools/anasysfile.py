@@ -216,12 +216,62 @@ class AnasysElement(object):
             xmlstr = minidom.parseString(ET.tostring(xml)).toprettyxml(indent="  ", encoding='UTF-16')
             f.write(xmlstr)
 
+    def _etree_to_dict(self, etree, key_tag):
+        """
+        Converts an ET element to a dict containing its children as AnasysElements.
+        e.g.,
+            <parent>
+                <obj1>
+                    <key>A</key>
+                </obj1>
+                <obj2>
+                    <key>B</key>
+                </obj2>
+                ...
+            </parent>
+        becomes:
+            parent = {'A': obj1, 'B': obj2, ...}
+        Arguments:
+            self = calling object (will be an instance of or derived from AnasysElement)
+            etree = element tree object to be converted
+            key_tag = object element to be used as key (e.g., Label, Name, ID, etc.)
+        """
+        return_dict = {}
+        for child in etree:
+            new_obj = AnasysElement(child)
+            key = new_obj[key_tag]
+            key = self._check_key(key, return_dict)
+            return_dict[key] = new_obj
+        return return_dict
+
+    def _etree_to_list(self, etree):
+        """
+        Converts an ET element to a list containing its children as AnasysElements.
+        e.g.,
+            <parent>
+                <obj1/>
+                <obj2/>
+                ...
+            </parent>
+        becomes:
+            parent = [obj1, obj2, ...]
+        Arguments:
+            self = calling object (will be an instance of or derived from AnasysElement)
+            etree = element tree object to be converted
+        """
+        return_list = []
+        for child in etree:
+            new_obj = AnasysElement(child)
+            return_list.append(new_obj)
+        return return_list
+
     def _iterable_to_etree(self, parent_elem, iterable_elem_name, iterable_obj):
         """
         Converts a named dict or list of Anasys Elements to an Element Tree
         object representation of the object
 
-        e.g., parent.var = {'ID1': obj1, 'ID2': obj2, ...} or parent.var = [obj1, obj2, ...]
+        e.g.,
+            parent.var = {'ID1': obj1, 'ID2': obj2, ...} or parent.var = [obj1, obj2, ...]
             becomes:
             <parent>
                 <var>
@@ -230,7 +280,6 @@ class AnasysElement(object):
                     ...
                 </var>
             </parent>
-
         Arguments:
         self = calling object (will be an instance of or derived from AnasysElement)
         parent_elem = the parent etree object to append to

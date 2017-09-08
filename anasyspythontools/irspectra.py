@@ -22,6 +22,7 @@ class IRRenderedSpectra(anasysfile.AnasysElement):
 
     def __init__(self, irrenderedspectra):
         # self._parent = parent #parent object (Document)
+        self._iterable_write = {}
         self._special_write = {'DataChannels': self._write_data_channels,
                                'FreqWindowMaps': self._write_freq_window_maps}
         self._special_read = {'DataChannels': self._get_data_channels,

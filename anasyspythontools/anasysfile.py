@@ -14,13 +14,14 @@ import numpy as np
 import re
 import collections
 import decimal as DC
-
 class AnasysElement(object):
 # class AnasysElement(collections.abc.Mapping):
     """Blank object for storing xml data"""
     def __init__(self, parent_obj=None, etree=None):
         self._parent_obj = parent_obj
         self._attributes = []   #list of dicts of tags:attributes, where applicable
+        if not hasattr(self, '_iterable_write'):
+            self._iterable_write = {} #just in case
         if not hasattr(self, '_special_write'):
             self._special_write = {} #just in case
         if not hasattr(self, '_special_read'):
@@ -28,7 +29,7 @@ class AnasysElement(object):
         if not hasattr(self, '_skip_on_write'):
             self._skip_on_write = [] #just in case
         if etree is not None:
-            self._convert_tags(etree) #really just parses the hell outta this tree
+            self._etree_to_anasys(etree) #really just parses the hell outta this tree
 
     def __dir__(self):
         """Returns a list of user-accessible attributes"""
@@ -83,6 +84,7 @@ class AnasysElement(object):
             return ET.Element(name)
         #If it's made it this far, it's time to loop through obj_items
         elem = ET.Element(name)
+        # pdb.set_trace()
         for k, v in obj_items.items():
             #If element was once an xml attribute, make it so again
             try: #Too lazy to deal with the fact dicts won't have this attribute
@@ -91,8 +93,11 @@ class AnasysElement(object):
                     continue
             except: #If axz's had unique tag names I wouldn't have to do this
                 pass
+            #Iterable conversions
+            if k in obj._iterable_write.keys():
+                obj._iterable_to_etree(elem, k, v)
             #Special return values
-            if k in obj._special_write.keys():
+            elif k in obj._special_write.keys():
                 if callable(obj._special_write[k]):
                     obj._special_write[k](elem, k, v)
                 else:
@@ -109,7 +114,7 @@ class AnasysElement(object):
             ET.SubElement(et_elem, attr[0])
             et_elem.find(attr[0]).text = attr[1]
 
-    def _convert_tags(self, element, parent_obj=None):
+    def _etree_to_anasys(self, element, parent_obj=None):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
         #If element has attributes, make them children before continuing
         if element.items() != []:
@@ -138,12 +143,14 @@ class AnasysElement(object):
             #Top level case, we want to add to self, rather than blank object
             if parent_obj == None:
                 element_obj = self
+            #store the etree tag name for later use
+            element_obj._name = element.tag
             #Update _attributes of given element
             element_obj._attributes.extend(element.keys())
             #Loop over each child and add attributes
             for child in element:
                 #Get recursion return value - either text, {} or AnasysElement() instance
-                rr = element_obj._convert_tags(child, element)
+                rr = element_obj._etree_to_anasys(child, element)
                 #Set element_obj.child_tag = rr
                 setattr(element_obj, child.tag, rr)
             #Return the object containing all children and attributes
@@ -208,3 +215,34 @@ class AnasysElement(object):
         with open(filename, 'wb') as f:
             xmlstr = minidom.parseString(ET.tostring(xml)).toprettyxml(indent="  ", encoding='UTF-16')
             f.write(xmlstr)
+
+    def _iterable_to_etree(self, parent_elem, iterable_elem_name, iterable_obj):
+        """
+        Converts a named dict or list of Anasys Elements to an Element Tree
+        object representation of the object
+
+        e.g., parent.var = {'ID1': obj1, 'ID2': obj2, ...} or parent.var = [obj1, obj2, ...]
+            becomes:
+            <parent>
+                <var>
+                    <obj1>...</obj1>
+                    <obj2>...</obj2>
+                    ...
+                </var>
+            </parent>
+
+        Arguments:
+        self = calling object (will be an instance of or derived from AnasysElement)
+        parent_elem = the parent etree object to append to
+        iterable_elem_name = the name of the dict or list variable (will become etree element name)
+        iterable_obj = the dict or list itself
+        """
+        parent_etree = ET.SubElement(parent_elem, iterable_elem_name)
+        if type(iterable_obj) == dict:
+            for child in iterable_obj.values():
+                new_elem = child._anasys_to_etree(child, name=child._name)
+                parent_etree.append(new_elem)
+        else:
+            for child in iterable_obj:
+                new_elem = child._anasys_to_etree(child, name=child._name)
+                parent_etree.append(new_elem)

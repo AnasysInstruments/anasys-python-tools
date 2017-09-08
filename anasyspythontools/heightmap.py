@@ -22,6 +22,7 @@ class HeightMap(anasysfile.AnasysElement):
 
     def __init__(self, heightmap):
         # self._parent = parent
+        self._iterable_write = {}
         self._special_write = {'Tags': self._write_tags}
         self._skip_on_write = []
         self._special_read = {'Tags': self._read_tags}

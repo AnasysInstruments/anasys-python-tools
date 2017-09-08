@@ -7,16 +7,17 @@ class Group(anasysfile.AnasysElement):
 
     def __init__(self, group):
         # self._parent = parent
-        self._special_write = {'Waveforms': self._write_waveforms}
+        self._iterable_write = {'Waveforms': None}
+        self._special_write = {}
         self._skip_on_write = []
         self._special_read = {'Waveforms': self._read_waveforms}
         anasysfile.AnasysElement.__init__(self, etree=group)
 
-    def _write_waveforms(self, elem, nom, waveforms):
-        waves = ET.SubElement(elem, nom)
-        for wave in waveforms.values():
-            new_elem = wave._anasys_to_etree(wave, name='Waveform')
-            waves.append(new_elem)
+    # def _write_waveforms(self, elem, nom, waveforms):
+    #     waves = ET.SubElement(elem, nom)
+    #     for wave in waveforms.values():
+    #         new_elem = wave._anasys_to_etree(wave, name='Waveform')
+    #         waves.append(new_elem)
 
     def _read_waveforms(self, waveforms):
         """Turn waveforms into a dict of waveforms"""

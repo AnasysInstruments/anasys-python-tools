@@ -48,10 +48,11 @@ def main():
     #         except:
     #             print("Something bad happened in file:", f)
 
-    # f = anasys.read('./tests/test data/nanoTA in R Feedback.axd')
-    g = anasys.read('./tests/test data/SThM Noise2.axd')
-    # f.write("./scratch/test_output.xml")
-    g.write("./scratch/test_output2.xml")
+    f = anasys.read('./tests/test data/TappingModeimage.axd')
+    # g = anasys.read('./tests/test data/SThM Noise2.axd')
+    f.write("./scratch/test_output.xml")
+    # print(f.HeightMaps['Height 1']._name)
+    # g.write("./scratch/test_output2.xml")
     # with open('./tests/test data/EmptyNanoTADoc.axd', mode='r', encoding='UTF-16') as f:
     #     lines = f.readlines()
     #     for idx, i in enumerate(lines):

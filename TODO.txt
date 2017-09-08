@@ -49,3 +49,26 @@ xmlns tags are being turned into objects. oops, fixit
 
 REALLY IMPORTANT:
 -original xml file should not be operated on in any way. make a copy first.
+
+WHAT I'D LIKE TO SEE
+
+special_tag:
+  pre-read modification to etree
+  special-read
+  post-read modificatiosn
+  pre-write modifications to element
+  special-write
+  post-write modifications to etree
+
+
+recursive_read
+-if tag in special_tags:
+    handle_special(tag, elem, read)
+-else
+    handle normally
+
+recursive_write
+-if tag in special_tags:
+    handle_special(tag, elem, write)
+else
+    handle normally

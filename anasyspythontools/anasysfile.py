@@ -120,6 +120,10 @@ class AnasysElement(object):
         if element.items() != []:
             self._attr_to_children(element)
         # If element is a key in _special_read, set special return value
+        if element.tag in self._should_be_dict.keys():
+            return self._etree_to_dict(element, self._should_be_dict[element.tag])
+        if element.tag in self._should_be_list.keys():
+            return self._etree_to_list(element, self._should_be_list[element.tag])
         if element.tag in self._special_read.keys():
             if callable(self._special_read[element.tag]):
                 return self._special_read[element.tag](element)
@@ -216,7 +220,7 @@ class AnasysElement(object):
             xmlstr = minidom.parseString(ET.tostring(xml)).toprettyxml(indent="  ", encoding='UTF-16')
             f.write(xmlstr)
 
-    def _etree_to_dict(self, etree, key_tag):
+    def _etree_to_dict(self, etree, key_tag='ID'):
         """
         Converts an ET element to a dict containing its children as AnasysElements.
         e.g.,
@@ -239,7 +243,10 @@ class AnasysElement(object):
         return_dict = {}
         for child in etree:
             new_obj = AnasysElement(child)
-            key = new_obj[key_tag]
+            try:
+                key = new_obj[key_tag]
+            except:
+                key = child.find('Label').text
             key = self._check_key(key, return_dict)
             return_dict[key] = new_obj
         return return_dict

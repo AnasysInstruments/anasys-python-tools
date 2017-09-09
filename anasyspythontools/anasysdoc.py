@@ -45,7 +45,7 @@ class AnasysDoc(anasysfile.AnasysElement):
         self._should_be_list = {'AFMUIChannels': None}
         self._special_read = {'HeightMaps': self._read_height_maps,
                               'RenderedSpectra':self._read_rendered_spectra,
-                              'Backgrounds': self._read_backgrounds,
+                              'Backgrounds': self._read_backgrounds}
         #                       'SpectraChannelViews': self._read_spectral_channel_views,
         #                       'AFMUIChannels': self._read_afm_ui_channels,
         #                       'AFMChannelViews': self._read_afm_channel_views,

@@ -139,7 +139,7 @@ class AnasysElement(object):
         #If element has children, return an object with its children
         else:
             #Default case, create blank object to add attributes to
-            element_obj = AnasysElement(self)
+            element_obj = AnasysElement(parent_obj=self)
             #Top level case, we want to add to self, rather than blank object
             if parent_obj == None:
                 element_obj = self
@@ -238,7 +238,7 @@ class AnasysElement(object):
         """
         return_dict = {}
         for child in etree:
-            new_obj = AnasysElement(child)
+            new_obj = AnasysElement(etree=child)
             key = new_obj[key_tag]
             key = self._check_key(key, return_dict)
             return_dict[key] = new_obj
@@ -261,7 +261,7 @@ class AnasysElement(object):
         """
         return_list = []
         for child in etree:
-            new_obj = AnasysElement(child)
+            new_obj = AnasysElement(etree=child)
             return_list.append(new_obj)
         return return_list
 

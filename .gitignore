@@ -18,3 +18,9 @@ __pycache__/
 ###########
 scratch/
 scratch.py
+
+
+
+# Sphinx documentation #
+docs/_static
+docs/_build

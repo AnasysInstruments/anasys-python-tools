@@ -14,6 +14,7 @@ import numpy as np
 import re
 import collections
 import decimal as DC
+
 class AnasysElement(object):
 # class AnasysElement(collections.abc.Mapping):
     """Blank object for storing xml data"""

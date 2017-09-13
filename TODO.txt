@@ -46,10 +46,6 @@ xmlns tags are being turned into objects. oops, fixit
 -Modularizing
 -PyPI upload
 
-
-REALLY IMPORTANT:
--original xml file should not be operated on in any way. make a copy first.
-
 WHAT I'D LIKE TO SEE
 
 special_tag:

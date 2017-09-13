@@ -138,11 +138,13 @@ class AnasysElement(object):
                 return ""
         #If element has children, return an object with its children
         else:
-            #Default case, create blank object to add attributes to
-            element_obj = AnasysElement(parent_obj=self)
-            #Top level case, we want to add to self, rather than blank object
             if parent_obj == None:
+                #Top level case, we want to add to self, rather than blank object
                 element_obj = self
+            else:
+                print(parent_obj)
+                #Default case, create blank object to add attributes to
+                element_obj = AnasysElement(parent_obj=self)
             #store the etree tag name for later use
             element_obj._name = element.tag
             #Update _attributes of given element

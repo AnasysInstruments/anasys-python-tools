@@ -20,10 +20,6 @@ class AnasysElement(object):
     def __init__(self, parent_obj=None, etree=None):
         self._parent_obj = parent_obj
         self._attributes = []   #list of dicts of tags:attributes, where applicable
-        if not hasattr(self, '_should_be_dict'):
-            self._should_be_dict = {} #just in case
-        if not hasattr(self, '_should_be_list'):
-            self._should_be_list = {} #just in case
         if not hasattr(self, '_iterable_write'):
             self._iterable_write = {} #just in case
         if not hasattr(self, '_special_write'):
@@ -124,10 +120,6 @@ class AnasysElement(object):
         if element.items() != []:
             self._attr_to_children(element)
         # If element is a key in _special_read, set special return value
-        if element.tag in self._should_be_dict.keys():
-            return self._etree_to_dict(element, self._should_be_dict[element.tag])
-        if element.tag in self._should_be_list.keys():
-            return self._etree_to_list(element)
         if element.tag in self._special_read.keys():
             if callable(self._special_read[element.tag]):
                 return self._special_read[element.tag](element)
@@ -153,7 +145,6 @@ class AnasysElement(object):
                 element_obj = self
             #store the etree tag name for later use
             element_obj._name = element.tag
-            print(element_obj._name)
             #Update _attributes of given element
             element_obj._attributes.extend(element.keys())
             #Loop over each child and add attributes
@@ -225,7 +216,7 @@ class AnasysElement(object):
             xmlstr = minidom.parseString(ET.tostring(xml)).toprettyxml(indent="  ", encoding='UTF-16')
             f.write(xmlstr)
 
-    def _etree_to_dict(self, etree, key_tag='ID'):
+    def _etree_to_dict(self, etree, key_tag):
         """
         Converts an ET element to a dict containing its children as AnasysElements.
         e.g.,
@@ -248,10 +239,7 @@ class AnasysElement(object):
         return_dict = {}
         for child in etree:
             new_obj = AnasysElement(child)
-            try:
-                key = new_obj[key_tag]
-            except:
-                key = child.find('Label').text
+            key = new_obj[key_tag]
             key = self._check_key(key, return_dict)
             return_dict[key] = new_obj
         return return_dict
@@ -301,7 +289,6 @@ class AnasysElement(object):
         parent_etree = ET.SubElement(parent_elem, iterable_elem_name)
         if type(iterable_obj) == dict:
             for child in iterable_obj.values():
-                print(iterable_elem_name, child)
                 new_elem = child._anasys_to_etree(child, name=child._name)
                 parent_etree.append(new_elem)
         else:

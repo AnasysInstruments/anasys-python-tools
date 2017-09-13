@@ -117,14 +117,10 @@ class AnasysElement(object):
     def _etree_to_anasys(self, element, parent_obj=None):
         """Iterates through element tree object and adds atrtibutes to HeightMap Object"""
         #If element has attributes, make them children before continuing
-        if element.items() != []:
-            self._attr_to_children(element)
+        self._attr_to_children(element)
         # If element is a key in _special_read, set special return value
         if element.tag in self._special_read.keys():
-            if callable(self._special_read[element.tag]):
-                return self._special_read[element.tag](element)
-            else:
-                return self._special_read[element.tag]
+            return self._special_read[element.tag](element)
         #If element is a key in _base_64_tags, return decoded data
         if '64' in element.tag:
             return self._decode_bs64(element.text)
@@ -142,9 +138,8 @@ class AnasysElement(object):
                 #Top level case, we want to add to self, rather than blank object
                 element_obj = self
             else:
-                print(parent_obj)
                 #Default case, create blank object to add attributes to
-                element_obj = AnasysElement(parent_obj=self)
+                element_obj = AnasysElement()#parent_obj=self)
             #store the etree tag name for later use
             element_obj._name = element.tag
             #Update _attributes of given element

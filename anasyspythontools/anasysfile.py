@@ -6,6 +6,7 @@
 #
 #  This program is the property of Anasys Instruments, and may not be
 #  redistributed or modified without explict permission of the author.
+
 from xml.dom import minidom #Unfortunately required as ElementTree won't pretty format xml
 import xml.etree.ElementTree as ET   #for parsing XML
 import base64

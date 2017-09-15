@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import filedialog
 from . import anasysfile
-# import anasysfile
 
 class HeightMap(anasysfile.AnasysElement):
     """A data structure for holding HeightMap data"""

@@ -1,6 +1,6 @@
 NOTE
-====
-Please note that this package is currently pre-alpha. When we are ready to release, this repository will be moved to the official Anasys Instruments github page.
+----
+Please note that this package is currently pre-alpha. Things may break unexpectedly. Please backup all data before use with this package. When ready to release, this repository will be moved to the official Anasys Instruments github page.
 
 Anasys Python Tools
 ========
@@ -24,9 +24,9 @@ Features
 --------
 
 - Read and write files with .axz, .axd, and .irb file extensions
-- Extract AFM height map images as numpy arrays
-- Extract specrtal data as numpy arrays
+- Extract AFM spectral and height map images as numpy arrays
 - Quickly display and save your data
+- Use your data with popular Python data libraries and applications (Pandas, Orange3, Jupyter, etc.)
 - Work with your data when you're away from your instruments
 
 Installation
@@ -37,7 +37,8 @@ For now, you must manually move the package into your python or working director
 Contribute
 ----------
 
-Feel free to fork and hack away!
+- Feel free to fork and hack away!
+- If you have a feature you'd like to see, please open an Issue.
 
 Support
 -------

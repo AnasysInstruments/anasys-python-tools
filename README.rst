@@ -11,7 +11,7 @@ by providing a basic explanation of how to do it easily.
 
 Basic Usage
 -----------
-::
+.. code-block:: python
   import anasyspythontools as anasys
   # Get your stuff done
   f = anasys.read("afmdata.axz")
@@ -19,7 +19,6 @@ Basic Usage
   heightmaps = f.HeightMaps
   # Show off your beautiful images
   heightmaps['Height 1'].show()
-
 
 Features
 --------

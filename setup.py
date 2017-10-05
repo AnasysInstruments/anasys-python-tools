@@ -13,7 +13,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
@@ -33,8 +33,8 @@ setup(
     # Author details
     author='Cody Schindler',
     author_email='cschindler@anasysinstruments.com',
-    maintainer='Anasys Software Team'
-    maintainer_email='cschindler@anasysinstruments.com'
+    maintainer='Anasys Software Team',
+    maintainer_email='cschindler@anasysinstruments.com',
 
     # Choose your license
     license='MIT',

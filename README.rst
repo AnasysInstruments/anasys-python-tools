@@ -1,6 +1,6 @@
 NOTE
 ----
-Please note that this package is currently pre-alpha. Things may break unexpectedly. Please backup all data before use with this package. When ready to release, this repository will be moved to the official Anasys Instruments github page.
+Please note that this package is currently pre-alpha. Things may break unexpectedly. Please backup all data before use with this package.
 
 Anasys Python Tools
 ========
@@ -18,12 +18,15 @@ Basic Usage
   heightmaps = f.HeightMaps
   # Show off your beautiful images
   heightmaps['Height 1'].show()
+  # Unsure what the data looks like? Try:
+  dir(f) # Displays user-accessible data
+  dir(f.HeightMaps)
 
 
 Features
 --------
 
-- Read and write files with .axz, .axd, and .irb file extensions
+- Read and write files with .axz, .axd, file extensions
 - Extract AFM spectral and height map images as numpy arrays
 - Quickly display and save your data
 - Use your data with popular Python data libraries and applications (Pandas, Orange3, Jupyter, etc.)
